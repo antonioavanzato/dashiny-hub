@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html class="light" lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <title>Даша | Финансы + Ученики</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "apple-gray": "#86868b",
+                        "apple-black": "#1d1d1f"
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "apple-md": "24px"
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Общие стили */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: none !important;
+            padding-right: 12px !important;
+        }
+        
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 20px;
+        }
+
+        .app-container {
+            transition: opacity 0.2s ease-in-out;
+        }
+        
+        .app-hidden {
+            display: none;
+            opacity: 0;
+        }
+        
+        .app-visible {
+            display: block;
+            opacity: 1;
+        }
+
+        @media (min-width: 768px) {
+            #menuButton {
+                display: none !important;
+            }
+        }
+
+        /* Стили для выпадающего списка */
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .suggestions-container.show {
+            display: block;
+        }
+        
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background-color: #f3f4f6;
+        }
+
+        /* Стили для редактирования процентов */
+        .percentage-input {
+            width: 45px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1d1d1f;
+            padding: 2px 0;
+            border-bottom: 1px dashed #d1d1d6;
+        }
+        
+        .percentage-input:focus {
+            outline: none;
+            border-bottom-color: #1d1d1f;
+        }
+        
+        .percentage-edit-icon {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .percentage-item:hover .percentage-edit-icon {
+            opacity: 0.5;
+        }
+        
+        .percentage-item:hover .percentage-edit-icon:hover {
+            opacity: 1;
+        }
+
+        /* Стили для модального окна */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .percentage-slider {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            appearance: none;
+        }
+        
+        .percentage-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #1d1d1f;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .percentage-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .percentage-label {
+            width: 100px;
+            font-size: 14px;
+            color: #6e6e73;
+        }
+        
+        .percentage-value {
+            width: 60px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+
+        /* Стили для таблицы учеников */
+        .current-day {
+            background-color: #fff3e0 !important;
+            font-weight: 600;
+        }
+        .current-day-header {
+            background-color: #ffedd5 !important;
+            color: #9a3412 !important;
+        }
+        
+        @media (max-width: 640px) {
+            .mobile-px {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            .mobile-text-sm {
+                font-size: 12px;
+            }
+            .mobile-input {
+                width: 48px !important;
+                padding: 6px 2px !important;
+                font-size: 12px !important;
+            }
+            .mobile-header {
+                padding: 12px 4px !important;
+                font-size: 12px !important;
+            }
+            .mobile-cell {
+                padding: 8px 2px !important;
+            }
+            .mobile-name-input {
+                min-width: 140px !important;
+                font-size: 12px !important;
+                padding: 6px 8px !important;
+            }
+        }
+
+        /* Стили для экрана входа */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 32px;
+            padding: 40px 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #1d1d1f;
+            box-shadow: 0 0 0 3px rgba(29,29,31,0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .login-button:hover {
+            background: #2d2d2f;
+        }
+
+        .biometric-button {
+            width: 100%;
+            padding: 16px;
+            background: #f3f4f6;
+            color: #1d1d1f;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .biometric-button:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        .biometric-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .login-error {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        .logout-button {
+            padding: 6px 12px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logout-button:hover {
+            background: #e5e7eb;
+        }
+
+        /* Стили для таблицы */
+        table {
+            border-collapse: collapse;
+            min-width: 100%;
+        }
+        th, td {
+            white-space: nowrap;
+        }
+        .sticky-left {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: inherit;
+        }
+    </style>
+</head>
+<body class="font-display bg-gray-50">
+    <!-- Экран входа -->
+    <div id="login-container" class="login-container">
+        <div class="login-box">
+            <div class="login-title">💰 Даша</div>
+            <div class="login-subtitle">Финансы и учет занятий</div>
+            
+            <input type="email" id="login-email" class="login-input" placeholder="Email" value="">
+            <input type="password" id="login-password" class="login-input" placeholder="Пароль" value="">
+            
+            <button class="login-button" onclick="handleEmailLogin()">
+                Войти
+            </button>
+            
+            <button class="biometric-button" id="biometric-btn" onclick="handleBiometricLogin()">
+                <span class="material-symbols-outlined">face</span>
+                Войти с Face ID / Touch ID
+            </button>
+            
+            <div id="login-error" class="login-error"></div>
+        </div>
+    </div>
+
+    <!-- Основной интерфейс -->
+    <div id="main-content" class="main-content">
+        <!-- Панель переключения вкладок -->
+        <div class="bg-white border-b border-apple-black/5 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-3 md:px-10 py-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <button onclick="switchApp('finance')" id="financeTabBtn" class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-medium bg-apple-black text-white">
+                                <span class="material-symbols-outlined text-base">account_balance</span>
+                                <span>Финансы</span>
+                            </button>
+                           <button onclick="switchApp('students')" id="studentsTabBtn" class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-medium text-apple-gray">
+                                <span class="material-symbols-outlined text-base">music_note</span>
+                                <span>Ученики</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <div id="connection-status" class="text-green-600">●</div>
+                        <button class="logout-button" onclick="logout()">
+                            <span class="material-symbols-outlined text-[14px]">logout</span>
+                            <span class="hidden md:inline">Выйти</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка ФИНАНСЫ -->
+        <div id="financeApp" class="app-container app-visible">
+            <main class="max-w-5xl mx-auto px-3 md:px-10 py-4 md:py-12">
+                <!-- Шапка с процентами -->
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-apple-black text-2xl">account_balance</span>
+                        <h1 class="text-xl font-light tracking-tight">Финансы</h1>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs">
+                        <div class="hidden md:flex gap-3 items-center" id="percentages-container">
+                            <div class="percentage-item flex items-center gap-1">
+                                <span class="text-apple-gray">На жизнь</span>
+                                <input type="number" id="percent-life" value="40" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
+                                <span class="text-apple-gray">%</span>
+                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
+                            </div>
+                            <span class="text-apple-gray/30">·</span>
+                            <div class="percentage-item flex items-center gap-1">
+                                <span class="text-apple-gray">Копилка</span>
+                                <input type="number" id="percent-piggy" value="20" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
+                                <span class="text-apple-gray">%</span>
+                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
+                            </div>
+                            <span class="text-apple-gray/30">·</span>
+                            <div class="percentage-item flex items-center gap-1">
+                                <span class="text-apple-gray">Маме долг</span>
+                                <input type="number" id="percent-debt" value="20" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
+                                <span class="text-apple-gray">%</span>
+                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
+                            </div>
+                            <span class="text-apple-gray/30">·</span>
+                            <div class="percentage-item flex items-center gap-1">
+                                <span class="text-apple-gray">Аренда</span>
+                                <input type="number" id="percent-rent" value="20" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
+                                <span class="text-apple-gray">%</span>
+                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
+                            </div>
+                        </div>
+                        
+                        <div class="md:hidden flex items-center gap-1">
+                            <span class="text-apple-gray" id="mobile-percents" onclick="openPercentageModal()">40% · 20% · 20% · 20%</span>
+                            <span class="material-symbols-outlined text-[16px] text-apple-gray/50" onclick="openPercentageModal()">tune</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Общий баланс -->
+                <div class="bg-gradient-to-br from-apple-black to-apple-black/90 text-white rounded-apple-md p-6 mb-4">
+                    <div class="text-xs text-white/60 mb-1">Общий баланс</div>
+                    <div class="text-4xl md:text-5xl font-light tracking-tight" id="total-balance">0 ₽</div>
+                </div>
+                
+                <!-- Категории -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-apple-gray">На жизнь</span>
+                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-life-display">40%</span>
+                        </div>
+                        <div class="text-xl font-light text-apple-black" id="life-balance">0 ₽</div>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-apple-gray">Копилка</span>
+                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-piggy-display">20%</span>
+                        </div>
+                        <div class="text-xl font-light text-apple-black" id="piggy-balance">0 ₽</div>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-apple-gray">Маме долг</span>
+                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-debt-display">20%</span>
+                        </div>
+                        <div class="text-xl font-light text-apple-black" id="debt-balance">0 ₽</div>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-apple-gray">Аренда</span>
+                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-rent-display">20%</span>
+                        </div>
+                        <div class="text-xl font-light text-apple-black" id="rent-balance">0 ₽</div>
+                    </div>
+                </div>
+                
+                <!-- Форма добавления -->
+                <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+                        <div class="col-span-12 md:col-span-4 relative">
+                            <input 
+                                type="text" 
+                                id="description" 
+                                placeholder="От кого / за что" 
+                                class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none focus:border-apple-black/40 text-sm"
+                                autocomplete="off"
+                                onfocus="showSuggestions()"
+                                oninput="filterSuggestions(this.value)"
+                                onkeydown="handleKeyDown(event)"
+                            >
+                            <div id="suggestions" class="suggestions-container"></div>
+                        </div>
+                        
+                        <input 
+                            type="number" 
+                            id="amount" 
+                            placeholder="Сумма" 
+                            min="0" 
+                            step="1"
+                            class="col-span-6 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none text-sm"
+                        >
+                        
+                        <select id="type" class="col-span-6 md:col-span-2 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm">
+                            <option value="income">Доход</option>
+                            <option value="expense">Расход</option>
+                        </select>
+                        
+                        <select id="expense-category" class="col-span-12 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm hidden">
+                            <option value="life">На жизнь</option>
+                            <option value="piggy">Копилка</option>
+                            <option value="debt">Маме долг</option>
+                            <option value="rent">Аренда</option>
+                        </select>
+                        
+                        <button 
+                            onclick="addTransaction()" 
+                            class="col-span-12 md:col-span-12 px-4 py-2.5 bg-apple-black text-white rounded-xl hover:bg-apple-black/90 transition-all text-sm font-medium"
+                        >
+                            Добавить
+                        </button>
+                    </div>
+                    
+                    <div id="distribution-hint" class="grid grid-cols-4 gap-2 mt-3 text-[11px] text-center text-apple-gray/70 border-t border-gray-100 pt-3">
+                        <div>На жизнь<br><span class="font-medium text-apple-black" id="hint-life">40%</span></div>
+                        <div>Копилка<br><span class="font-medium text-apple-black" id="hint-piggy">20%</span></div>
+                        <div>Маме долг<br><span class="font-medium text-apple-black" id="hint-debt">20%</span></div>
+                        <div>Аренда<br><span class="font-medium text-apple-black" id="hint-rent">20%</span></div>
+                    </div>
+                </div>
+                
+                <!-- История операций -->
+                <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-sm font-medium">История операций</h2>
+                        <div class="flex gap-2">
+                            <select id="filter-type" class="text-xs border border-gray-200/80 rounded-lg px-2 py-1 bg-gray-50" onchange="filterTransactions()">
+                                <option value="all">Все</option>
+                                <option value="income">Доходы</option>
+                                <option value="expense">Расходы</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-b border-gray-100">
+                                <tr>
+                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Описание</th>
+                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Сумма</th>
+                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Распределение</th>
+                                    <th class="text-right py-2 text-xs font-normal text-apple-gray"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-list" class="divide-y divide-gray-100">
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center text-sm text-apple-gray">
+                                        Загрузка...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Модальное окно для настройки процентов -->
+            <div id="percentage-modal" class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="text-lg font-medium">Настройка процентов</h3>
+                        <button onclick="closePercentageModal()" class="text-apple-gray/50 hover:text-apple-black">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="percentage-row">
+                            <span class="percentage-label">На жизнь</span>
+                            <input type="range" id="modal-life" class="percentage-slider" value="40" min="0" max="100" oninput="updateModalLife(this.value)">
+                            <span class="percentage-value" id="modal-life-value">40%</span>
+                        </div>
+                        <div class="percentage-row">
+                            <span class="percentage-label">Копилка</span>
+                            <input type="range" id="modal-piggy" class="percentage-slider" value="20" min="0" max="100" oninput="updateModalPiggy(this.value)">
+                            <span class="percentage-value" id="modal-piggy-value">20%</span>
+                        </div>
+                        <div class="percentage-row">
+                            <span class="percentage-label">Маме долг</span>
+                            <input type="range" id="modal-debt" class="percentage-slider" value="20" min="0" max="100" oninput="updateModalDebt(this.value)">
+                            <span class="percentage-value" id="modal-debt-value">20%</span>
+                        </div>
+                        <div class="percentage-row">
+                            <span class="percentage-label">Аренда</span>
+                            <input type="range" id="modal-rent" class="percentage-slider" value="20" min="0" max="100" oninput="updateModalRent(this.value)">
+                            <span class="percentage-value" id="modal-rent-value">20%</span>
+                        </div>
+                        <div class="text-center text-sm text-apple-gray/70 mt-4" id="modal-total">
+                            Сумма: 100%
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="applyPercentages()" class="flex-1 bg-apple-black text-white rounded-xl py-3 text-sm font-medium">Применить</button>
+                        <button onclick="closePercentageModal()" class="flex-1 bg-gray-100 text-apple-black rounded-xl py-3 text-sm font-medium">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка УЧЕНИКИ -->
+        <div id="studentsApp" class="app-container app-hidden">
+            <main class="max-w-7xl mx-auto px-2 md:px-6 py-2 md:py-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 md:mb-6 mobile-px">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-2xl md:text-3xl text-apple-black">music_note</span>
+                        <h1 class="text-lg md:text-2xl font-light tracking-tight">Ученики <span class="text-apple-gray text-sm md:text-base">| вокал · фортепиано</span></h1>
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <select id="monthSelect" onchange="changeMonth()" 
+                            class="flex-1 md:flex-none px-3 md:px-4 py-2 bg-white border border-apple-black/10 rounded-xl text-xs md:text-sm focus:outline-none focus:border-apple-black/40">
+                            <option value="0">Янв 2026</option>
+                            <option value="1">Фев 2026</option>
+                            <option value="2">Мар 2026</option>
+                            <option value="3">Апр 2026</option>
+                            <option value="4">Май 2026</option>
+                            <option value="5">Июн 2026</option>
+                            <option value="6">Июл 2026</option>
+                            <option value="7">Авг 2026</option>
+                            <option value="8">Сен 2026</option>
+                            <option value="9">Окт 2026</option>
+                            <option value="10">Ноя 2026</option>
+                            <option value="11">Дек 2026</option>
+                        </select>
+                        <button onclick="setCurrentMonth()" 
+                            class="px-3 md:px-4 py-2 bg-apple-black text-white rounded-xl text-xs md:text-sm whitespace-nowrap hover:bg-apple-black/90 transition-colors">
+                            <span class="md:hidden">Сегодня</span>
+                            <span class="hidden md:inline">Текущий месяц</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-apple-black/5 rounded-apple-lg overflow-hidden mb-4 md:mb-6">
+                    <div class="overflow-x-auto overflow-y-auto" style="max-height: calc(100vh - 250px); -webkit-overflow-scrolling: touch;">
+                        <table class="w-full text-xs md:text-sm">
+                            <thead class="bg-gray-50 border-b border-apple-black/5 sticky top-0 z-30">
+                                <tr id="header-row">
+                                    <th class="text-left py-3 md:py-4 px-2 md:px-4 font-normal text-apple-gray sticky left-0 bg-gray-50 min-w-[140px] md:min-w-[200px] z-40 mobile-header">Ученики</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-apple-black/5"></tbody>
+                            <tfoot class="bg-gray-50 border-t border-apple-black/5 sticky bottom-0 z-20">
+                                <tr id="table-footer" class="border-b border-apple-black/5"></tr>
+                                <tr id="rent-footer" class="bg-gray-100/50"></tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mobile-px">
+                    <div class="bg-white border border-apple-black/5 rounded-apple-md p-4 md:p-5">
+                        <div class="text-xs text-apple-gray mb-2 md:mb-3">ИТОГО ЗА МЕСЯЦ</div>
+                        <div class="text-2xl md:text-3xl font-light tracking-tight" id="totalMonth">0 ₽</div>
+                    </div>
+                    
+                    <div class="bg-white border border-apple-black/5 rounded-apple-md p-4 md:p-5">
+                        <div class="grid grid-cols-2 gap-3 md:gap-4">
+                            <div>
+                                <div class="text-xs text-apple-gray mb-1 md:mb-2">Налог 4%</div>
+                                <div class="text-lg md:text-xl font-light" id="taxAmount">0 ₽</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-apple-gray mb-1 md:mb-2">Аренда всего</div>
+                                <div class="text-lg md:text-xl font-light" id="totalRent">0 ₽</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mt-3 md:mt-4 pt-3 md:pt-4 border-t border-apple-black/5">
+                            <span class="text-sm md:text-base font-medium">ЧИСТЫМИ</span>
+                            <span class="text-xl md:text-2xl font-light text-green-600" id="netAmount">0 ₽</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-2 text-[10px] text-apple-gray/50 md:hidden">
+                    ← листайте таблицу горизонтально →
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // ======== КОНФИГУРАЦИЯ FIREBASE ========
+        
+        // Инициализация основного приложения Firebase для финансов
+        const financeConfig = {
+            apiKey: "AIzaSyDk2igG-YInLcrmOHKZu5F6TdmurpCGJes",
+            authDomain: "dasha-finance-app.firebaseapp.com",
+            projectId: "dasha-finance-app",
+            storageBucket: "dasha-finance-app.firebasestorage.app",
+            messagingSenderId: "332580827279",
+            appId: "1:332580827279:web:beb14e738d5ac4befb40fa"
+        };
+        
+        // Инициализация второго приложения Firebase для учеников
+        const studentsConfig = {
+            apiKey: "AIzaSyCCKdeFy0-n9S6eZCTZQjCDBReh3Xzc6n0",
+            authDomain: "dashastudio-356b0.firebaseapp.com",
+            projectId: "dashastudio-356b0",
+            storageBucket: "dashastudio-356b0.firebasestorage.app",
+            messagingSenderId: "200875515989",
+            appId: "1:200875515989:web:fef8b7920c811b505934dc"
+        };
+        
+        // Инициализация приложений
+        const financeApp = firebase.initializeApp(financeConfig, 'finance');
+        const studentsApp = firebase.initializeApp(studentsConfig, 'students');
+        
+        // Получаем экземпляры
+        const financeDb = firebase.firestore(financeApp);
+        const studentsDb = firebase.firestore(studentsApp);
+        const financeAuth = firebase.auth(financeApp);
+        const studentsAuth = firebase.auth(studentsApp);
+        
+        // UID Даши
+        const DASHA_UID = "mBAYcCEDf0fAVVZZxZaJc3MXTyN2";
+        const DASHA_STUDENTS_UID = "ZYFaeuNrMESg5AxMvvxBabdQkWr1";
+        
+        // Элементы интерфейса
+        const loginContainer = document.getElementById('login-container');
+        const mainContent = document.getElementById('main-content');
+        const loginError = document.getElementById('login-error');
+        const biometricBtn = document.getElementById('biometric-btn');
+        
+        // Переменные для текущего пользователя
+        let currentUser = null;
+        
+        // Проверяем поддержку биометрии
+        if (window.PublicKeyCredential) {
+            biometricBtn.disabled = false;
+        } else {
+            biometricBtn.disabled = true;
+            biometricBtn.title = "Face ID не поддерживается на этом устройстве";
+        }
+        
+        // Функция для входа в оба приложения
+        async function loginToBoth(email, password) {
+            try {
+                // Входим в финансы
+                await financeAuth.signInWithEmailAndPassword(email, password);
+                console.log("✅ Вход в финансы");
+                
+                // Входим в учеников
+                await studentsAuth.signInWithEmailAndPassword(email, password);
+                console.log("✅ Вход в учеников");
+                
+                return true;
+            } catch (error) {
+                console.error("Ошибка входа:", error);
+                throw error;
+            }
+        }
+        
+        // Следим за состоянием авторизации
+studentsAuth.onAuthStateChanged(async (user) => {
+    if (user && user.uid === DASHA_STUDENTS_UID) {
+        // Проверяем финансы
+        if (!financeAuth.currentUser) {
+            try {
+                const savedPassword = localStorage.getItem('tempPassword');
+                if (savedPassword) {
+                    await financeAuth.signInWithEmailAndPassword(user.email, savedPassword);
+                }
+            } catch (err) {
+                console.log("Не удалось войти в финансы автоматически");
+            }
+        }
+        
+        currentUser = user;
+        loginContainer.style.display = 'none';
+        mainContent.style.display = 'block';
+        document.getElementById('connection-status').className = "text-green-600";
+        
+        // Загружаем данные
+        loadFinanceData();
+        loadStudentsData();
+        
+        switchApp('finance');
+    } else if (user) {
+        // Не тот пользователь - выходим
+        await studentsAuth.signOut();
+        await financeAuth.signOut();
+        showLoginScreen();
+    } else {
+        showLoginScreen();
+    }
+});
+        
+        function showLoginScreen() {
+            loginContainer.style.display = 'flex';
+            mainContent.style.display = 'none';
+            loginError.textContent = '';
+        }
+        
+        // Вход по email/паролю
+        window.handleEmailLogin = async function() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                loginError.textContent = 'Введи email и пароль';
+                return;
+            }
+            
+            try {
+                localStorage.setItem('tempPassword', password);
+                await loginToBoth(email, password);
+            } catch (error) {
+                if (error.code === 'auth/user-not-found') {
+                    loginError.textContent = 'Пользователь не найден';
+                } else if (error.code === 'auth/wrong-password') {
+                    loginError.textContent = 'Неверный пароль';
+                } else {
+                    loginError.textContent = 'Ошибка входа: ' + error.message;
+                }
+            }
+        };
+        
+        // Вход с биометрией
+        window.handleBiometricLogin = async function() {
+            try {
+                await loginToBoth(
+    document.getElementById('login-email').value,
+    document.getElementById('login-password').value
+);
+            } catch (error) {
+                loginError.textContent = 'Ошибка биометрического входа';
+            }
+        };
+        
+        // Выход
+        window.logout = function() {
+            studentsAuth.signOut();
+            financeAuth.signOut();
+            localStorage.removeItem('tempPassword');
+        };
+        
+        // Переключение между вкладками
+        window.switchApp = function(app) {
+            const financeAppEl = document.getElementById('financeApp');
+            const studentsAppEl = document.getElementById('studentsApp');
+            const financeBtn = document.getElementById('financeTabBtn');
+            const studentsBtn = document.getElementById('studentsTabBtn');
+            
+            financeAppEl.classList.add('app-hidden');
+            financeAppEl.classList.remove('app-visible');
+            studentsAppEl.classList.add('app-hidden');
+            studentsAppEl.classList.remove('app-visible');
+            
+            // Обновляем стили кнопок
+            financeBtn.classList.remove('bg-apple-black', 'text-white');
+            studentsBtn.classList.remove('bg-apple-black', 'text-white');
+            financeBtn.classList.add('text-apple-gray');
+            studentsBtn.classList.add('text-apple-gray');
+            
+            if (app === 'finance') {
+                financeAppEl.classList.remove('app-hidden');
+                financeAppEl.classList.add('app-visible');
+                financeBtn.classList.remove('text-apple-gray');
+                financeBtn.classList.add('bg-apple-black', 'text-white');
+            } else {
+                studentsAppEl.classList.remove('app-hidden');
+                studentsAppEl.classList.add('app-visible');
+                studentsBtn.classList.remove('text-apple-gray');
+                studentsBtn.classList.add('bg-apple-black', 'text-white');
+            }
+        };
+        
+        // ========== КОД ИЗ ФИНАНСОВОГО ПРИЛОЖЕНИЯ ==========
+        
+        const COLLECTION_NAME = "dasha_finances_final";
+        
+        let transactions = [];
+        let filteredTransactions = [];
+        let selectedSuggestionIndex = -1;
+        
+        let percentages = {
+            life: 40,
+            piggy: 20,
+            debt: 20,
+            rent: 20
+        };
+        
+        let balances = {
+            total: 0,
+            life: 0,
+            piggy: 0,
+            debt: 0,
+            rent: 0
+        };
+        
+        // Элементы финансов
+        const totalBalance = document.getElementById('total-balance');
+        const lifeBalance = document.getElementById('life-balance');
+        const piggyBalance = document.getElementById('piggy-balance');
+        const debtBalance = document.getElementById('debt-balance');
+        const rentBalance = document.getElementById('rent-balance');
+        const transactionList = document.getElementById('transaction-list');
+        const typeSelect = document.getElementById('type');
+        const expenseCategory = document.getElementById('expense-category');
+        const distributionHint = document.getElementById('distribution-hint');
+        const descriptionInput = document.getElementById('description');
+        const suggestionsContainer = document.getElementById('suggestions');
+        
+        const percentLifeInput = document.getElementById('percent-life');
+        const percentPiggyInput = document.getElementById('percent-piggy');
+        const percentDebtInput = document.getElementById('percent-debt');
+        const percentRentInput = document.getElementById('percent-rent');
+        
+        const percentLifeDisplay = document.getElementById('percent-life-display');
+        const percentPiggyDisplay = document.getElementById('percent-piggy-display');
+        const percentDebtDisplay = document.getElementById('percent-debt-display');
+        const percentRentDisplay = document.getElementById('percent-rent-display');
+        
+        const hintLife = document.getElementById('hint-life');
+        const hintPiggy = document.getElementById('hint-piggy');
+        const hintDebt = document.getElementById('hint-debt');
+        const hintRent = document.getElementById('hint-rent');
+        
+        const mobilePercents = document.getElementById('mobile-percents');
+        
+        const modal = document.getElementById('percentage-modal');
+        const modalLife = document.getElementById('modal-life');
+        const modalPiggy = document.getElementById('modal-piggy');
+        const modalDebt = document.getElementById('modal-debt');
+        const modalRent = document.getElementById('modal-rent');
+        const modalLifeValue = document.getElementById('modal-life-value');
+        const modalPiggyValue = document.getElementById('modal-piggy-value');
+        const modalDebtValue = document.getElementById('modal-debt-value');
+        const modalRentValue = document.getElementById('modal-rent-value');
+        const modalTotal = document.getElementById('modal-total');
+        
+        const popularOptions = [
+            "Такси", "Продукты", "Аренда", "WB", "Ozon", 
+            "Скуратов"
+        ];
+        
+        function loadFinanceData() {
+            if (!financeAuth.currentUser) return;
+            
+            financeDb.collection(COLLECTION_NAME)
+                .orderBy("date", "desc")
+                .onSnapshot((snapshot) => {
+                    transactions = [];
+                    snapshot.forEach((doc) => {
+                        transactions.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    filterTransactions();
+                    calculateBalances();
+                }, (error) => {
+                    console.error("Ошибка загрузки финансов:", error);
+                    transactionList.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-sm text-red-600">
+                                Ошибка загрузки: ${error.message}
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+        
+        window.openPercentageModal = function() {
+            modalLife.value = percentages.life;
+            modalPiggy.value = percentages.piggy;
+            modalDebt.value = percentages.debt;
+            modalRent.value = percentages.rent;
+            
+            modalLifeValue.textContent = percentages.life + '%';
+            modalPiggyValue.textContent = percentages.piggy + '%';
+            modalDebtValue.textContent = percentages.debt + '%';
+            modalRentValue.textContent = percentages.rent + '%';
+            
+            updateModalTotal();
+            modal.classList.add('show');
+        };
+        
+        window.closePercentageModal = function() {
+            modal.classList.remove('show');
+        };
+        
+        window.updateModalLife = function(value) {
+            modalLifeValue.textContent = value + '%';
+            updateModalTotal();
+        };
+        
+        window.updateModalPiggy = function(value) {
+            modalPiggyValue.textContent = value + '%';
+            updateModalTotal();
+        };
+        
+        window.updateModalDebt = function(value) {
+            modalDebtValue.textContent = value + '%';
+            updateModalTotal();
+        };
+        
+        window.updateModalRent = function(value) {
+            modalRentValue.textContent = value + '%';
+            updateModalTotal();
+        };
+        
+        function updateModalTotal() {
+            const total = parseInt(modalLife.value) + parseInt(modalPiggy.value) + 
+                         parseInt(modalDebt.value) + parseInt(modalRent.value);
+            
+            modalTotal.textContent = 'Сумма: ' + total + '%';
+            
+            if (total !== 100) {
+                modalTotal.style.color = '#ef4444';
+            } else {
+                modalTotal.style.color = '#6e6e73';
+            }
+        }
+        
+        window.applyPercentages = function() {
+            percentages.life = parseInt(modalLife.value);
+            percentages.piggy = parseInt(modalPiggy.value);
+            percentages.debt = parseInt(modalDebt.value);
+            percentages.rent = parseInt(modalRent.value);
+            
+            percentLifeInput.value = percentages.life;
+            percentPiggyInput.value = percentages.piggy;
+            percentDebtInput.value = percentages.debt;
+            percentRentInput.value = percentages.rent;
+            
+            updatePercentages();
+            closePercentageModal();
+        };
+        
+        window.updatePercentages = function() {
+            percentages.life = parseInt(percentLifeInput.value) || 0;
+            percentages.piggy = parseInt(percentPiggyInput.value) || 0;
+            percentages.debt = parseInt(percentDebtInput.value) || 0;
+            percentages.rent = parseInt(percentRentInput.value) || 0;
+            
+            percentLifeDisplay.textContent = percentages.life + '%';
+            percentPiggyDisplay.textContent = percentages.piggy + '%';
+            percentDebtDisplay.textContent = percentages.debt + '%';
+            percentRentDisplay.textContent = percentages.rent + '%';
+            
+            hintLife.textContent = percentages.life + '%';
+            hintPiggy.textContent = percentages.piggy + '%';
+            hintDebt.textContent = percentages.debt + '%';
+            hintRent.textContent = percentages.rent + '%';
+            
+            mobilePercents.textContent = percentages.life + '% · ' + percentages.piggy + '% · ' + percentages.debt + '% · ' + percentages.rent + '%';
+        };
+        
+        typeSelect.addEventListener('change', function() {
+            if (this.value === 'expense') {
+                expenseCategory.classList.remove('hidden');
+                distributionHint.style.display = 'none';
+            } else {
+                expenseCategory.classList.add('hidden');
+                distributionHint.style.display = 'grid';
+            }
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!descriptionInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.classList.remove('show');
+            }
+        });
+        
+        window.showSuggestions = function() {
+            filterSuggestions(descriptionInput.value);
+        };
+        
+        window.filterSuggestions = function(query) {
+            const filtered = popularOptions.filter(option => 
+                option.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            displaySuggestions(filtered, query);
+        };
+        
+        function displaySuggestions(suggestions, query) {
+            if (suggestions.length === 0) {
+                suggestionsContainer.classList.remove('show');
+                return;
+            }
+            
+            let html = '';
+            suggestions.forEach((suggestion, index) => {
+                const highlightedText = suggestion.replace(
+                    new RegExp(query, 'gi'),
+                    match => `<span class="font-medium text-apple-black">${match}</span>`
+                );
+                
+                html += `
+                    <div class="suggestion-item ${index === selectedSuggestionIndex ? 'selected' : ''}" 
+                         onclick="selectSuggestion('${suggestion}')"
+                         onmouseover="selectedSuggestionIndex = ${index}">
+                        ${highlightedText}
+                    </div>
+                `;
+            });
+            
+            suggestionsContainer.innerHTML = html;
+            suggestionsContainer.classList.add('show');
+        }
+        
+        window.selectSuggestion = function(value) {
+            descriptionInput.value = value;
+            suggestionsContainer.classList.remove('show');
+            selectedSuggestionIndex = -1;
+        };
+        
+        window.handleKeyDown = function(e) {
+            const suggestions = document.querySelectorAll('.suggestion-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestions.length - 1);
+                highlightSuggestion();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+                highlightSuggestion();
+            } else if (e.key === 'Enter' && selectedSuggestionIndex !== -1) {
+                e.preventDefault();
+                const selected = suggestions[selectedSuggestionIndex];
+                if (selected) {
+                    selectSuggestion(selected.textContent);
+                }
+            } else if (e.key === 'Escape') {
+                suggestionsContainer.classList.remove('show');
+                selectedSuggestionIndex = -1;
+            }
+        };
+        
+        function highlightSuggestion() {
+            const suggestions = document.querySelectorAll('.suggestion-item');
+            suggestions.forEach((s, i) => {
+                if (i === selectedSuggestionIndex) {
+                    s.classList.add('selected');
+                    s.scrollIntoView({ block: 'nearest' });
+                } else {
+                    s.classList.remove('selected');
+                }
+            });
+        }
+        
+        window.filterTransactions = function() {
+            const typeFilter = document.getElementById('filter-type').value;
+            
+            filteredTransactions = transactions.filter(t => {
+                if (typeFilter !== 'all' && t.type !== typeFilter) return false;
+                return true;
+            });
+            
+            updateUI();
+        };
+        
+        function calculateBalances() {
+            balances = { total: 0, life: 0, piggy: 0, debt: 0, rent: 0 };
+            
+            transactions.forEach(t => {
+                if (t.type === 'income') {
+                    balances.total += t.amount;
+                    balances.life += t.lifeAmount || 0;
+                    balances.piggy += t.piggyAmount || 0;
+                    balances.debt += t.debtAmount || 0;
+                    balances.rent += t.rentAmount || 0;
+                } else {
+                    balances.total -= t.amount;
+                    if (t.category === 'life') balances.life -= t.amount;
+                    else if (t.category === 'piggy') balances.piggy -= t.amount;
+                    else if (t.category === 'debt') balances.debt -= t.amount;
+                    else if (t.category === 'rent') balances.rent -= t.amount;
+                }
+            });
+            
+            totalBalance.textContent = formatMoney(balances.total) + ' ₽';
+            lifeBalance.textContent = formatMoney(balances.life) + ' ₽';
+            piggyBalance.textContent = formatMoney(balances.piggy) + ' ₽';
+            debtBalance.textContent = formatMoney(balances.debt) + ' ₽';
+            rentBalance.textContent = formatMoney(balances.rent) + ' ₽';
+        }
+        
+        window.addTransaction = async function() {
+            const description = document.getElementById('description').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+            const type = document.getElementById('type').value;
+            
+            if (!description || isNaN(amount) || amount <= 0) {
+                alert('Заполните все поля');
+                return;
+            }
+            
+            let transactionData = {
+                description: description,
+                amount: amount,
+                type: type,
+                date: firebase.firestore.FieldValue.serverTimestamp(),
+                percentages: { ...percentages }
+            };
+            
+            if (type === 'income') {
+                let lifeAmount = Math.floor(amount * percentages.life / 100);
+                let piggyAmount = Math.floor(amount * percentages.piggy / 100);
+                let debtAmount = Math.floor(amount * percentages.debt / 100);
+                let rentAmount = Math.floor(amount * percentages.rent / 100);
+                
+                const totalDistributed = lifeAmount + piggyAmount + debtAmount + rentAmount;
+                const difference = amount - totalDistributed;
+                
+                if (difference !== 0) {
+                    lifeAmount += difference;
+                }
+                
+                transactionData.lifeAmount = lifeAmount;
+                transactionData.piggyAmount = piggyAmount;
+                transactionData.debtAmount = debtAmount;
+                transactionData.rentAmount = rentAmount;
+                transactionData.categoryDisplay = 'Доход';
+            } else {
+                const category = document.getElementById('expense-category').value;
+                transactionData.category = category;
+                
+                const categoryNames = {
+                    'life': 'На жизнь',
+                    'piggy': 'Копилка',
+                    'debt': 'Маме долг',
+                    'rent': 'Аренда'
+                };
+                transactionData.categoryDisplay = categoryNames[category];
+            }
+            
+            try {
+                await financeDb.collection(COLLECTION_NAME).add(transactionData);
+                
+                document.getElementById('description').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('description').focus();
+            } catch (error) {
+                console.error(error);
+                alert('Ошибка при добавлении');
+            }
+        };
+        
+        window.deleteTransaction = async function(id) {
+            if (confirm('Удалить операцию?')) {
+                try {
+                    await financeDb.collection(COLLECTION_NAME).doc(id).delete();
+                } catch (error) {
+                    alert('Ошибка при удалении');
+                }
+            }
+        };
+        
+        function updateUI() {
+            if (filteredTransactions.length === 0) {
+                transactionList.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-sm text-apple-gray">
+                            Нет операций
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            filteredTransactions.forEach(t => {
+                const date = t.date 
+                    ? new Date(t.date.seconds * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+                    : 'сейчас';
+                
+                const isIncome = t.type === 'income';
+                const amountClass = isIncome ? 'text-green-600' : 'text-red-600';
+                const amountSign = isIncome ? '+' : '−';
+                
+                let distribution = '';
+                if (isIncome) {
+                    distribution = `
+                        <div class="text-xs text-apple-gray/70">
+                            На жизнь ${formatMoney(t.lifeAmount, true)} · 
+                            Копилка ${formatMoney(t.piggyAmount, true)} · 
+                            Маме долг ${formatMoney(t.debtAmount, true)} · 
+                            Аренда ${formatMoney(t.rentAmount, true)}
+                        </div>
+                    `;
+                } else {
+                    distribution = `<span class="text-xs text-apple-gray/70">${t.categoryDisplay || 'Расход'}</span>`;
+                }
+                
+                html += `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-3">
+                            <div class="text-sm">${escapeHtml(t.description)}</div>
+                            <div class="text-[10px] text-apple-gray/70 md:hidden">${date}</div>
+                        </td>
+                        <td class="py-3">
+                            <span class="${amountClass} text-sm font-medium">${amountSign}${formatMoney(t.amount, true)} ₽</span>
+                        </td>
+                        <td class="py-3">
+                            ${distribution}
+                        </td>
+                        <td class="py-3 text-right">
+                            <button onclick="deleteTransaction('${t.id}')" 
+                                class="text-apple-gray/50 hover:text-red-600 transition-colors">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            transactionList.innerHTML = html;
+        }
+        
+        function formatMoney(amount, short = false) {
+            if (amount === undefined || amount === null) return '0';
+            if (short) {
+                if (amount >= 1000) return (amount/1000).toFixed(1) + 'k';
+                return amount.toString();
+            }
+            return amount.toLocaleString('ru-RU');
+        }
+        
+        function escapeHtml(text) {
+            if (text === undefined || text === null) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        distributionHint.style.display = 'grid';
+        expenseCategory.classList.add('hidden');
+        
+        if (percentLifeInput) {
+            percentLifeInput.addEventListener('change', updatePercentages);
+            percentPiggyInput.addEventListener('change', updatePercentages);
+            percentDebtInput.addEventListener('change', updatePercentages);
+            percentRentInput.addEventListener('change', updatePercentages);
+        }
+        
+        updatePercentages();
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closePercentageModal();
+            }
+        });
+        
+        // ========== КОД ИЗ ПРИЛОЖЕНИЯ УЧЕНИКОВ ==========
+        
+        let students = Array(30).fill().map((_, i) => ({ id: i + 1, name: '' }));
+        let tableData = {};
+        let rentData = {};
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let currentDay = new Date().getDate();
+        let docId = null;
+        
+        function loadStudentsData() {
+            if (!studentsAuth.currentUser) return;
+            
+            studentsDb.collection('dasha').doc('main')
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        students = data.students || students;
+                        tableData = data.tableData || {};
+                        rentData = data.rentData || {};
+                        docId = doc.id;
+                        
+                        setMonthInSelect();
+                        renderTable();
+                        scrollToCurrentDay();
+                    } else {
+                        studentsDb.collection('dasha').doc('main').set({
+                            students: students,
+                            tableData: {},
+                            rentData: {},
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            docId = 'main';
+                        });
+                    }
+                }, (error) => {
+                    console.error('Ошибка загрузки учеников:', error);
+                });
+        }
+        
+        function saveToFirebase() {
+            if (!docId) return;
+            
+            studentsDb.collection('dasha').doc('main').set({
+                students: students,
+                tableData: tableData,
+                rentData: rentData,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).catch(error => console.error('Ошибка сохранения:', error));
+        }
+        
+        function getDaysInMonth(month, year) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+        
+        window.changeMonth = function() {
+            const select = document.getElementById('monthSelect');
+            currentMonth = parseInt(select.value);
+            renderTable();
+            saveToFirebase();
+        };
+        
+        window.setCurrentMonth = function() {
+            const now = new Date();
+            currentMonth = now.getMonth();
+            currentYear = now.getFullYear();
+            currentDay = now.getDate();
+            
+            const select = document.getElementById('monthSelect');
+            select.value = currentMonth;
+            
+            renderTable();
+            scrollToCurrentDay();
+        };
+        
+        function setMonthInSelect() {
+            const select = document.getElementById('monthSelect');
+            select.value = currentMonth;
+        }
+        
+        function scrollToCurrentDay() {
+            setTimeout(() => {
+                const currentDayElement = document.querySelector('.current-day-header, .current-day');
+                if (currentDayElement) {
+                    currentDayElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
+                    });
+                }
+            }, 300);
+        }
+        
+        window.onCellChange = async function(i, day) {
+            const cell = document.getElementById(`cell_${i}_${day}`);
+            if (cell) {
+                const key = `${currentMonth}_${currentYear}_${i}_${day}`;
+                tableData[key] = parseInt(cell.value) || 0;
+                calculateTotals();
+                await saveToFirebase();
+            }
+        };
+        
+        window.onRentChange = async function(day) {
+            const rentCell = document.getElementById(`rent_${day}`);
+            if (rentCell) {
+                const key = `${currentMonth}_${currentYear}_rent_${day}`;
+                rentData[key] = parseInt(rentCell.value) || 0;
+                calculateTotals();
+                await saveToFirebase();
+            }
+        };
+        
+        window.onNameChange = async function(i) {
+            const input = document.getElementById(`student_name_${i}`);
+            if (input) {
+                students[i].name = input.value;
+                await saveToFirebase();
+            }
+        };
+        
+        function renderTable() {
+            const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+            const headerRow = document.getElementById('header-row');
+            const tbody = document.getElementById('table-body');
+            const footer = document.getElementById('table-footer');
+            const rentFooter = document.getElementById('rent-footer');
+            
+            let headerHtml = '';
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                     currentYear === new Date().getFullYear() && 
+                                     day === currentDay);
+                
+                const dayClass = isCurrentDay ? 
+                    'text-center py-3 md:py-4 px-1 md:px-2 font-normal min-w-[40px] md:min-w-[60px] current-day-header mobile-header' : 
+                    'text-center py-3 md:py-4 px-1 md:px-2 font-normal text-apple-gray min-w-[40px] md:min-w-[60px] mobile-header';
+                
+                headerHtml += `<th class="${dayClass}">${day}</th>`;
+            }
+            
+            headerHtml += '<th class="text-center py-3 md:py-4 px-2 md:px-4 font-normal text-apple-gray min-w-[60px] md:min-w-[80px] mobile-header">ИТОГО</th>';
+            headerRow.innerHTML = '<th class="text-left py-3 md:py-4 px-2 md:px-4 font-normal text-apple-gray sticky left-0 bg-gray-50 min-w-[140px] md:min-w-[200px] z-40 mobile-header">Ученики</th>' + headerHtml;
+            
+            let tbodyHtml = '';
+            let dayTotals = new Array(daysInMonth + 1).fill(0);
+            
+            for (let i = 0; i < students.length; i++) {
+                const student = students[i];
+                let studentTotal = 0;
+                
+                tbodyHtml += '<tr class="hover:bg-gray-50/50 transition-colors">';
+                
+                tbodyHtml += `<td class="py-2 md:py-3 px-2 md:px-4 sticky left-0 bg-white z-10"><input type="text" id="student_name_${i}" value="${escapeHtml(student.name || '')}" placeholder="Ученик ${i+1}" 
+                    class="w-full px-2 md:px-3 py-1.5 md:py-2 bg-gray-50 border border-apple-black/10 rounded-xl text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-name-input"
+                    onchange="onNameChange(${i})"></td>`;
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const key = `${currentMonth}_${currentYear}_${i}_${day}`;
+                    const value = tableData[key] || 0;
+                    studentTotal += value;
+                    dayTotals[day] += value;
+                    
+                    const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                         currentYear === new Date().getFullYear() && 
+                                         day === currentDay);
+                    
+                    const cellClass = isCurrentDay ? 
+                        'py-2 md:py-3 px-0.5 md:px-1 text-center current-day mobile-cell' : 
+                        'py-2 md:py-3 px-0.5 md:px-1 text-center mobile-cell';
+                    
+                    tbodyHtml += `<td class="${cellClass}"><input type="number" id="cell_${i}_${day}" value="${value || ''}" min="0" step="100" 
+                        class="w-10 md:w-16 px-1 md:px-2 py-1.5 md:py-2 bg-gray-50 border border-apple-black/10 rounded-lg md:rounded-xl text-center text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-input"
+                        onchange="onCellChange(${i}, ${day})"></td>`;
+                }
+                
+                tbodyHtml += `<td class="py-2 md:py-3 px-2 md:px-4 text-right font-medium text-xs md:text-sm" id="student_total_${i}">${studentTotal.toLocaleString()} ₽</td>`;
+                tbodyHtml += '</tr>';
+            }
+            
+            tbody.innerHTML = tbodyHtml;
+            
+            let footerHtml = '<td class="py-2 md:py-3 px-2 md:px-4 font-medium sticky left-0 bg-gray-50 z-10 text-xs md:text-sm">ИТОГО</td>';
+            let monthTotal = 0;
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                     currentYear === new Date().getFullYear() && 
+                                     day === currentDay);
+                
+                const dayClass = isCurrentDay ? 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center font-medium bg-gray-50 current-day text-xs md:text-sm mobile-cell' : 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center font-medium bg-gray-50 text-xs md:text-sm mobile-cell';
+                
+                footerHtml += `<td class="${dayClass}" id="day_total_${day}">${dayTotals[day].toLocaleString()} ₽</td>`;
+                monthTotal += dayTotals[day];
+            }
+            
+            footerHtml += `<td class="py-2 md:py-3 px-2 md:px-4 text-right font-medium bg-gray-50 text-xs md:text-sm" id="monthTotal">${monthTotal.toLocaleString()} ₽</td>`;
+            footer.innerHTML = footerHtml;
+            
+            let rentHtml = '<td class="py-2 md:py-3 px-2 md:px-4 font-medium sticky left-0 bg-gray-100/50 z-10 text-apple-gray text-xs md:text-sm">АРЕНДА</td>';
+            let totalRent = 0;
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const key = `${currentMonth}_${currentYear}_rent_${day}`;
+                const rentValue = rentData[key] || 0;
+                totalRent += rentValue;
+                
+                const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                     currentYear === new Date().getFullYear() && 
+                                     day === currentDay);
+                
+                const cellClass = isCurrentDay ? 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center bg-gray-100/50 current-day mobile-cell' : 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center bg-gray-100/50 mobile-cell';
+                
+                rentHtml += `<td class="${cellClass}"><input type="number" id="rent_${day}" value="${rentValue || ''}" min="0" step="100" 
+                    class="w-10 md:w-16 px-1 md:px-2 py-1.5 md:py-2 bg-white border border-apple-black/10 rounded-lg md:rounded-xl text-center text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-input"
+                    onchange="onRentChange(${day})"></td>`;
+            }
+            
+            rentHtml += `<td class="py-2 md:py-3 px-2 md:px-4 text-right font-medium bg-gray-100/50 text-xs md:text-sm" id="totalRentFooter">${totalRent.toLocaleString()} ₽</td>`;
+            rentFooter.innerHTML = rentHtml;
+            
+            document.getElementById('totalMonth').textContent = `${monthTotal.toLocaleString()} ₽`;
+            document.getElementById('totalRent').textContent = `${totalRent.toLocaleString()} ₽`;
+            calculateNet(monthTotal, totalRent);
+        }
+        
+        function calculateTotals() {
+            const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+            let dayTotals = new Array(daysInMonth + 1).fill(0);
+            let monthTotal = 0;
+            let totalRent = 0;
+            
+            for (let i = 0; i < students.length; i++) {
+                let studentTotal = 0;
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const cell = document.getElementById(`cell_${i}_${day}`);
+                    if (cell) {
+                        const val = parseInt(cell.value) || 0;
+                        studentTotal += val;
+                        dayTotals[day] += val;
+                    }
+                }
+                const studentTotalEl = document.getElementById(`student_total_${i}`);
+                if (studentTotalEl) studentTotalEl.textContent = `${studentTotal.toLocaleString()} ₽`;
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = document.getElementById(`day_total_${day}`);
+                if (dayEl) {
+                    dayEl.textContent = `${dayTotals[day].toLocaleString()} ₽`;
+                }
+                monthTotal += dayTotals[day];
+                
+                const rentCell = document.getElementById(`rent_${day}`);
+                if (rentCell) {
+                    totalRent += parseInt(rentCell.value) || 0;
+                }
+            }
+            
+            const monthTotalEl = document.getElementById('monthTotal');
+            if (monthTotalEl) monthTotalEl.textContent = `${monthTotal.toLocaleString()} ₽`;
+            
+            const totalRentFooter = document.getElementById('totalRentFooter');
+            if (totalRentFooter) totalRentFooter.textContent = `${totalRent.toLocaleString()} ₽`;
+            
+            document.getElementById('totalMonth').textContent = `${monthTotal.toLocaleString()} ₽`;
+            document.getElementById('totalRent').textContent = `${totalRent.toLocaleString()} ₽`;
+            
+            calculateNet(monthTotal, totalRent);
+        }
+        
+        function calculateNet(total, rent) {
+            const tax = Math.round(total * 0.04);
+            const net = total - tax - rent;
+            
+            document.getElementById('taxAmount').textContent = `${tax.toLocaleString()} ₽`;
+            document.getElementById('netAmount').textContent = `${net.toLocaleString()} ₽`;
+        }
+    </script>
+</body>
+</html>
