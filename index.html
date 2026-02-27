@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     
-    <title>DASHAHUB | Финансы + Ученики</title>
+    <title>Даша | Финансы + Ученики</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,7 @@
     </script>
     
     <style>
-        /* Все твои старые стили остаются */
+        /* Общие стили */
         select {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -85,6 +85,7 @@
             }
         }
 
+        /* Стили для выпадающего списка */
         .suggestions-container {
             position: absolute;
             top: 100%;
@@ -112,11 +113,16 @@
             border-bottom: 1px solid #f3f4f6;
         }
         
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
         .suggestion-item:hover,
         .suggestion-item.selected {
             background-color: #f3f4f6;
         }
 
+        /* Стили для редактируемых блоков копилок */
         .piggy-bank {
             background: white;
             border: 1px solid #e5e7eb;
@@ -161,6 +167,7 @@
             border-bottom: 1px solid #1d1d1f;
         }
 
+        /* Стили для прогресс-бара */
         .progress-container {
             margin-top: 8px;
         }
@@ -195,6 +202,7 @@
             margin-top: 4px;
         }
 
+        /* Стили для таблицы учеников */
         .current-day {
             background-color: #fff3e0 !important;
             font-weight: 600;
@@ -231,6 +239,7 @@
             }
         }
 
+        /* Стили для экрана входа */
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -352,6 +361,7 @@
             background: #e5e7eb;
         }
 
+        /* Стили для кнопки аналитики */
         .analytics-button {
             padding: 6px 12px;
             background: #f3f4f6;
@@ -369,6 +379,7 @@
             background: #e5e7eb;
         }
 
+        /* Стили для модального окна аналитики */
         .analytics-modal-overlay {
             position: fixed;
             top: 0;
@@ -531,6 +542,7 @@
             color: #ef4444;
         }
 
+        /* Стили для таблицы */
         table {
             border-collapse: collapse;
             min-width: 100%;
@@ -560,6 +572,11 @@
                 Войти
             </button>
             
+            <button class="biometric-button" id="biometric-btn" onclick="handleBiometricLogin()">
+                <span class="material-symbols-outlined">face</span>
+                Войти с Face ID / Touch ID
+            </button>
+            
             <div id="login-error" class="login-error"></div>
         </div>
     </div>
@@ -585,6 +602,10 @@
                     
                     <div class="flex items-center gap-3">
                         <div id="connection-status" class="text-green-600">●</div>
+                        <button class="analytics-button" onclick="openMonthlyReport()">
+                            <span class="material-symbols-outlined text-[14px]">analytics</span>
+                            <span class="hidden md:inline">Аналитика</span>
+                        </button>
                         <button class="logout-button" onclick="logout()">
                             <span class="material-symbols-outlined text-[14px]">logout</span>
                             <span class="hidden md:inline">Выйти</span>
@@ -596,37 +617,42 @@
 
         <!-- Вкладка ФИНАНСЫ -->
         <div id="financeApp" class="app-container app-visible">
-            <!-- Весь твой HTML для финансов -->
             <main class="max-w-5xl mx-auto px-3 md:px-10 py-4 md:py-12">
-                <!-- Копилки и всё остальное -->
-                <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
+                
+                <!-- Первая строка: Black и Общий баланс -->
+               <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
+                    <!-- Black (редактируемый) -->
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="black-name" value="Black" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="black-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('black')">
+                      <input type="number" id="black-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('black')">
                     </div>
                     
+                    <!-- Общий баланс (нередактируемый) -->
                     <div class="bg-gradient-to-br from-apple-black to-apple-black/90 text-white rounded-apple-md p-3 md:p-4">
                         <div class="text-[10px] md:text-xs text-white/60 mb-1">Общий баланс</div>
                         <div class="text-xl md:text-2xl font-light tracking-tight" id="total-balance">0 ₽</div>
                     </div>
                 </div>
                 
+                <!-- Вторая строка: Накопительный счет (нередактируемый) -->
                 <div class="bg-white border border-gray-200/80 rounded-apple-md p-3 md:p-4 mb-3 md:mb-4">
                     <div class="text-[10px] md:text-xs text-apple-gray mb-1">Накопительный счет</div>
                     <div class="text-xl md:text-2xl font-light text-apple-black" id="savings-total">0 ₽</div>
                 </div>
                 
-                <!-- Остальные копилки -->
+                <!-- Третья строка: На жизнь / Мама с прогрессом -->
                 <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="life-name" value="На жизнь" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
                        <input type="number" id="life-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('life')">
                     </div>
                     
+                    <!-- Мама с прогрессом -->
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="mom-name" value="Мама" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
                         <input type="number" id="mom-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('mom')">
                         
+                        <!-- Прогресс копилки -->
                         <div class="progress-container">
                             <div class="progress-label">
                                 <span>Цель: 250 000 ₽</span>
@@ -642,6 +668,7 @@
                     </div>
                 </div>
                 
+                <!-- Четвертая строка: Моя копилка / Аренда -->
                 <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="mypiggy-name" value="Моя копилка" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
@@ -653,7 +680,8 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
+                <!-- Пятая строка: Катя тренировки / Женя тренировки -->
+               <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="katya-name" value="Катя тренировки" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
                      <input type="number" id="katya-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('katya')">
@@ -664,6 +692,7 @@
                     </div>
                 </div>
                 
+                <!-- Шестая строка: Минск / Зеркало -->
                 <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="minsk-name" value="Минск" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
@@ -675,6 +704,7 @@
                     </div>
                 </div>
                 
+                <!-- Седьмая строка: Прочее / Прочее -->
                 <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="other1-name" value="Прочее" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
@@ -685,7 +715,7 @@
                      <input type="number" id="other2-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('other2')">
                     </div>
                 </div>
-                
+             
                 <!-- Форма добавления операции -->
                 <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
@@ -710,9 +740,14 @@
                             <option value="expense">Расход</option>
                         </select>
                         
-                        <select id="piggy-select" class="col-span-12 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm"></select>
+                        <select id="piggy-select" class="col-span-12 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm">
+                            <!-- Список копилок будет заполнен через JavaScript -->
+                        </select>
                         
-                        <button onclick="addTransaction()" class="col-span-12 md:col-span-2 px-4 py-2.5 bg-apple-black text-white rounded-xl hover:bg-apple-black/90 transition-all text-sm font-medium">
+                        <button 
+                            onclick="addTransaction()" 
+                            class="col-span-12 md:col-span-2 px-4 py-2.5 bg-apple-black text-white rounded-xl hover:bg-apple-black/90 transition-all text-sm font-medium"
+                        >
                             Добавить
                         </button>
                     </div>
@@ -742,7 +777,11 @@
                                 </tr>
                             </thead>
                             <tbody id="transaction-list" class="divide-y divide-gray-100">
-                                <tr><td colspan="4" class="py-8 text-center text-sm text-apple-gray">Загрузка...</td></tr>
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center text-sm text-apple-gray">
+                                        Загрузка...
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -756,32 +795,42 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 md:mb-6 mobile-px">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-2xl md:text-3xl text-apple-black">music_note</span>
-                        <h1 class="text-lg md:text-2xl font-light tracking-tight">Ученики</h1>
+                        <h1 class="text-lg md:text-2xl font-light tracking-tight">Ученики <span class="text-apple-gray text-sm md:text-base">| вокал · фортепиано</span></h1>
                     </div>
                     <div class="flex items-center gap-2 w-full md:w-auto">
                         <select id="monthSelect" onchange="changeMonth()" 
                             class="flex-1 md:flex-none px-3 md:px-4 py-2 bg-white border border-apple-black/10 rounded-xl text-xs md:text-sm focus:outline-none focus:border-apple-black/40">
-                            <option value="0">Янв 2026</option><option value="1">Фев 2026</option><option value="2">Мар 2026</option>
-                            <option value="3">Апр 2026</option><option value="4">Май 2026</option><option value="5">Июн 2026</option>
-                            <option value="6">Июл 2026</option><option value="7">Авг 2026</option><option value="8">Сен 2026</option>
-                            <option value="9">Окт 2026</option><option value="10">Ноя 2026</option><option value="11">Дек 2026</option>
+                            <option value="0">Янв 2026</option>
+                            <option value="1">Фев 2026</option>
+                            <option value="2">Мар 2026</option>
+                            <option value="3">Апр 2026</option>
+                            <option value="4">Май 2026</option>
+                            <option value="5">Июн 2026</option>
+                            <option value="6">Июл 2026</option>
+                            <option value="7">Авг 2026</option>
+                            <option value="8">Сен 2026</option>
+                            <option value="9">Окт 2026</option>
+                            <option value="10">Ноя 2026</option>
+                            <option value="11">Дек 2026</option>
                         </select>
-                        <button onclick="setCurrentMonth()" class="px-3 md:px-4 py-2 bg-apple-black text-white rounded-xl text-xs md:text-sm whitespace-nowrap hover:bg-apple-black/90 transition-colors">
-                            Текущий месяц
+                        <button onclick="setCurrentMonth()" 
+                            class="px-3 md:px-4 py-2 bg-apple-black text-white rounded-xl text-xs md:text-sm whitespace-nowrap hover:bg-apple-black/90 transition-colors">
+                            <span class="md:hidden">Сегодня</span>
+                            <span class="hidden md:inline">Текущий месяц</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-white border border-apple-black/5 rounded-apple-lg overflow-hidden">
-                    <div class="overflow-x-auto" style="max-height: calc(100vh - 250px);">
+                <div class="bg-white border border-apple-black/5 rounded-apple-lg overflow-hidden mb-4 md:mb-6">
+                    <div class="overflow-x-auto overflow-y-auto" style="max-height: calc(100vh - 250px); -webkit-overflow-scrolling: touch;">
                         <table class="w-full text-xs md:text-sm">
-                            <thead class="bg-gray-50 sticky top-0 z-30">
+                            <thead class="bg-gray-50 border-b border-apple-black/5 sticky top-0 z-30">
                                 <tr id="header-row">
-                                    <th class="text-left py-3 md:py-4 px-2 md:px-4 font-normal text-apple-gray sticky left-0 bg-gray-50 min-w-[140px] md:min-w-[200px] z-40">Ученики</th>
+                                    <th class="text-left py-3 md:py-4 px-2 md:px-4 font-normal text-apple-gray sticky left-0 bg-gray-50 min-w-[140px] md:min-w-[200px] z-40 mobile-header">Ученики</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-apple-black/5"></tbody>
-                            <tfoot class="bg-gray-50 sticky bottom-0 z-20">
+                            <tfoot class="bg-gray-50 border-t border-apple-black/5 sticky bottom-0 z-20">
                                 <tr id="table-footer" class="border-b border-apple-black/5"></tr>
                                 <tr id="rent-footer" class="bg-gray-100/50"></tr>
                             </tfoot>
@@ -789,7 +838,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-4 mobile-px">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mobile-px">
                     <div class="bg-white border border-apple-black/5 rounded-apple-md p-4 md:p-5">
                         <div class="text-xs text-apple-gray mb-2 md:mb-3">ИТОГО ЗА МЕСЯЦ</div>
                         <div class="text-2xl md:text-3xl font-light tracking-tight" id="totalMonth">0 ₽</div>
@@ -797,14 +846,24 @@
                     
                     <div class="bg-white border border-apple-black/5 rounded-apple-md p-4 md:p-5">
                         <div class="grid grid-cols-2 gap-3 md:gap-4">
-                            <div><div class="text-xs text-apple-gray mb-1 md:mb-2">Налог 4%</div><div class="text-lg md:text-xl font-light" id="taxAmount">0 ₽</div></div>
-                            <div><div class="text-xs text-apple-gray mb-1 md:mb-2">Аренда всего</div><div class="text-lg md:text-xl font-light" id="totalRent">0 ₽</div></div>
+                            <div>
+                                <div class="text-xs text-apple-gray mb-1 md:mb-2">Налог 4%</div>
+                                <div class="text-lg md:text-xl font-light" id="taxAmount">0 ₽</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-apple-gray mb-1 md:mb-2">Аренда всего</div>
+                                <div class="text-lg md:text-xl font-light" id="totalRent">0 ₽</div>
+                            </div>
                         </div>
                         <div class="flex justify-between items-center mt-3 md:mt-4 pt-3 md:pt-4 border-t border-apple-black/5">
                             <span class="text-sm md:text-base font-medium">ЧИСТЫМИ</span>
                             <span class="text-xl md:text-2xl font-light text-green-600" id="netAmount">0 ₽</span>
                         </div>
                     </div>
+                </div>
+                
+                <div class="text-center mt-2 text-[10px] text-apple-gray/50 md:hidden">
+                    ← листайте таблицу горизонтально →
                 </div>
             </main>
         </div>
@@ -814,12 +873,17 @@
     <div id="analytics-modal" class="analytics-modal-overlay">
         <div class="analytics-modal-content">
             <div class="analytics-modal-header">
-                <h3 class="text-lg font-medium">Детальный отчет</h3>
+                <h3 class="text-lg font-medium">Детальный отчет за месяц</h3>
                 <button onclick="closeMonthlyReport()" class="text-apple-gray/50 hover:text-apple-black">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <div class="analytics-modal-body" id="analytics-content">Загрузка...</div>
+            <div class="analytics-modal-body" id="analytics-content">
+                <!-- Содержимое будет заполнено через JavaScript -->
+                <div class="text-center py-8 text-apple-gray">
+                    Загрузка данных...
+                </div>
+            </div>
         </div>
     </div>
 
@@ -828,7 +892,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <script>
-        // ======== ОДИН FIREBASE ДЛЯ ВСЕГО ========
+        // ======== НОВАЯ КОНФИГУРАЦИЯ FIREBASE (DASHAHUB) ========
         const firebaseConfig = {
             apiKey: "AIzaSyD5TrY0x_HFgTI7D7LlLSsJsow0HiQWIl4",
             authDomain: "dashahub-ff197.firebaseapp.com",
@@ -847,9 +911,118 @@
         const loginContainer = document.getElementById('login-container');
         const mainContent = document.getElementById('main-content');
         const loginError = document.getElementById('login-error');
+        const biometricBtn = document.getElementById('biometric-btn');
 
-        // Переменные для финансов
-        const FINANCE_COLLECTION = "finances";
+        // Переменные для текущего пользователя
+        let currentUser = null;
+
+        // Проверяем поддержку биометрии
+        if (window.PublicKeyCredential) {
+            biometricBtn.disabled = false;
+        } else {
+            biometricBtn.disabled = true;
+            biometricBtn.title = "Face ID не поддерживается на этом устройстве";
+        }
+
+        // Следим за состоянием авторизации
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                loginContainer.style.display = 'none';
+                mainContent.style.display = 'block';
+                document.getElementById('connection-status').className = "text-green-600";
+                
+                // Загружаем данные
+                loadFinanceData();
+                loadStudentsData();
+                
+                switchApp('finance');
+            } else {
+                showLoginScreen();
+            }
+        });
+
+        function showLoginScreen() {
+            loginContainer.style.display = 'flex';
+            mainContent.style.display = 'none';
+            loginError.textContent = '';
+        }
+
+        // Вход по email/паролю
+        window.handleEmailLogin = async function() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                loginError.textContent = 'Введи email и пароль';
+                return;
+            }
+            
+            try {
+                localStorage.setItem('tempPassword', password);
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                if (error.code === 'auth/user-not-found') {
+                    loginError.textContent = 'Пользователь не найден';
+                } else if (error.code === 'auth/wrong-password') {
+                    loginError.textContent = 'Неверный пароль';
+                } else {
+                    loginError.textContent = 'Ошибка входа: ' + error.message;
+                }
+            }
+        };
+
+        // Вход с биометрией
+        window.handleBiometricLogin = async function() {
+            try {
+                await auth.signInWithEmailAndPassword(
+                    document.getElementById('login-email').value,
+                    document.getElementById('login-password').value
+                );
+            } catch (error) {
+                loginError.textContent = 'Ошибка биометрического входа';
+            }
+        };
+
+        // Выход
+        window.logout = function() {
+            auth.signOut();
+            localStorage.removeItem('tempPassword');
+        };
+
+        // Переключение между вкладками
+        window.switchApp = function(app) {
+            const financeAppEl = document.getElementById('financeApp');
+            const studentsAppEl = document.getElementById('studentsApp');
+            const financeBtn = document.getElementById('financeTabBtn');
+            const studentsBtn = document.getElementById('studentsTabBtn');
+            
+            financeAppEl.classList.add('app-hidden');
+            financeAppEl.classList.remove('app-visible');
+            studentsAppEl.classList.add('app-hidden');
+            studentsAppEl.classList.remove('app-visible');
+            
+            financeBtn.classList.remove('bg-apple-black', 'text-white');
+            studentsBtn.classList.remove('bg-apple-black', 'text-white');
+            financeBtn.classList.add('text-apple-gray');
+            studentsBtn.classList.add('text-apple-gray');
+            
+            if (app === 'finance') {
+                financeAppEl.classList.remove('app-hidden');
+                financeAppEl.classList.add('app-visible');
+                financeBtn.classList.remove('text-apple-gray');
+                financeBtn.classList.add('bg-apple-black', 'text-white');
+            } else {
+                studentsAppEl.classList.remove('app-hidden');
+                studentsAppEl.classList.add('app-visible');
+                studentsBtn.classList.remove('text-apple-gray');
+                studentsBtn.classList.add('bg-apple-black', 'text-white');
+            }
+        };
+
+        // ========== КОД ФИНАНСОВ ==========
+        const FINANCE_COLLECTION = "dasha_finances_final";
+        
         let transactions = [];
         let filteredTransactions = [];
         let selectedSuggestionIndex = -1;
@@ -868,116 +1041,39 @@
             other2: { name: 'Прочее', amount: 0 }
         };
 
-        // Переменные для учеников
-        const STUDENTS_DOC = "students_main";
-        let students = Array(30).fill().map((_, i) => ({ id: i + 1, name: '' }));
-        let tableData = {};
-        let rentData = {};
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-        let currentDay = new Date().getDate();
+        const totalBalance = document.getElementById('total-balance');
+        const savingsTotal = document.getElementById('savings-total');
+        const transactionList = document.getElementById('transaction-list');
+        const typeSelect = document.getElementById('type');
+        const piggySelect = document.getElementById('piggy-select');
+        const descriptionInput = document.getElementById('description');
+        const suggestionsContainer = document.getElementById('suggestions');
 
-        // ========== АВТОРИЗАЦИЯ ==========
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                loginContainer.style.display = 'none';
-                mainContent.style.display = 'block';
-                document.getElementById('connection-status').className = "text-green-600";
-                
-                loadFinanceData();
-                loadStudentsData();
-                switchApp('finance');
-            } else {
-                loginContainer.style.display = 'flex';
-                mainContent.style.display = 'none';
-            }
-        });
+        const popularOptions = [
+            "Такси", "Продукты", "Аренда", "WB", "Ozon", 
+            "Скуратов"
+        ];
 
-        window.handleEmailLogin = async function() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+        window.updatePiggySelectLabel = function() {
+            const type = document.getElementById('type').value;
+            const label = type === 'income' ? 'В какую копилку' : 'Из какой копилки';
             
-            if (!email || !password) {
-                loginError.textContent = 'Введи email и пароль';
-                return;
+            const oldLabel = piggySelect.previousElementSibling;
+            if (oldLabel && oldLabel.tagName === 'SPAN') {
+                oldLabel.remove();
             }
             
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-            } catch (error) {
-                loginError.textContent = 'Ошибка: ' + error.message;
-            }
+            piggySelect.insertAdjacentHTML('beforebegin', `<span class="text-xs text-apple-gray mb-1 block">${label}</span>`);
         };
 
-        window.logout = function() {
-            auth.signOut();
-        };
-
-        window.switchApp = function(app) {
-            document.getElementById('financeApp').classList.add('app-hidden');
-            document.getElementById('financeApp').classList.remove('app-visible');
-            document.getElementById('studentsApp').classList.add('app-hidden');
-            document.getElementById('studentsApp').classList.remove('app-visible');
-            
-            document.getElementById('financeTabBtn').classList.remove('bg-apple-black', 'text-white');
-            document.getElementById('studentsTabBtn').classList.remove('bg-apple-black', 'text-white');
-            document.getElementById('financeTabBtn').classList.add('text-apple-gray');
-            document.getElementById('studentsTabBtn').classList.add('text-apple-gray');
-            
-            if (app === 'finance') {
-                document.getElementById('financeApp').classList.remove('app-hidden');
-                document.getElementById('financeApp').classList.add('app-visible');
-                document.getElementById('financeTabBtn').classList.remove('text-apple-gray');
-                document.getElementById('financeTabBtn').classList.add('bg-apple-black', 'text-white');
-            } else {
-                document.getElementById('studentsApp').classList.remove('app-hidden');
-                document.getElementById('studentsApp').classList.add('app-visible');
-                document.getElementById('studentsTabBtn').classList.remove('text-apple-gray');
-                document.getElementById('studentsTabBtn').classList.add('bg-apple-black', 'text-white');
+        function populatePiggySelect() {
+            let options = '';
+            for (let key in piggyBanks) {
+                options += `<option value="${key}">${piggyBanks[key].name}</option>`;
             }
-        };
-
-        // ========== ФИНАНСЫ ==========
-        function loadFinanceData() {
-            if (!auth.currentUser) return;
-            
-            db.collection(FINANCE_COLLECTION)
-                .orderBy("date", "desc")
-                .onSnapshot((snapshot) => {
-                    transactions = [];
-                    for (let key in piggyBanks) piggyBanks[key].amount = 0;
-                    
-                    snapshot.forEach((doc) => {
-                        const t = { id: doc.id, ...doc.data() };
-                        transactions.push(t);
-                        
-                        if (t.type === 'income' && t.piggyKey) {
-                            piggyBanks[t.piggyKey].amount += t.amount;
-                        } else if (t.type === 'expense' && t.piggyKey) {
-                            piggyBanks[t.piggyKey].amount -= t.amount;
-                        }
-                    });
-                    
-                    for (let key in piggyBanks) {
-                        const input = document.getElementById(`${key}-amount`);
-                        if (input) input.value = piggyBanks[key].amount;
-                    }
-                    
-                    updateMomProgress();
-                    recalculateTotals();
-                    filterTransactions();
-                    updateUI();
-                }, (error) => {
-                    console.error("Ошибка загрузки финансов:", error);
-                });
+            piggySelect.innerHTML = options;
+            updatePiggySelectLabel();
         }
-
-        window.updatePiggyAmount = function(key) {
-            const input = document.getElementById(`${key}-amount`);
-            piggyBanks[key].amount = parseFloat(input.value) || 0;
-            recalculateTotals();
-            if (key === 'mom') updateMomProgress();
-        };
 
         window.updatePiggyNames = function() {
             piggyBanks.black.name = document.getElementById('black-name').value || 'Black';
@@ -995,29 +1091,27 @@
             populatePiggySelect();
         };
 
-        function populatePiggySelect() {
-            let options = '';
-            for (let key in piggyBanks) {
-                options += `<option value="${key}">${piggyBanks[key].name}</option>`;
+        window.updatePiggyAmount = function(key) {
+            const input = document.getElementById(`${key}-amount`);
+            piggyBanks[key].amount = parseFloat(input.value) || 0;
+            recalculateTotals();
+            
+            if (key === 'mom') {
+                updateMomProgress();
             }
-            document.getElementById('piggy-select').innerHTML = options;
-        }
-
-        window.updatePiggySelectLabel = function() {
-            const type = document.getElementById('type').value;
-            const label = type === 'income' ? 'В какую копилку' : 'Из какой копилки';
-            const oldLabel = document.getElementById('piggy-select').previousElementSibling;
-            if (oldLabel && oldLabel.tagName === 'SPAN') oldLabel.remove();
-            document.getElementById('piggy-select').insertAdjacentHTML('beforebegin', `<span class="text-xs text-apple-gray mb-1 block">${label}</span>`);
         };
 
         function recalculateTotals() {
             const savingsKeys = ['life', 'mom', 'mypiggy', 'rent', 'katya', 'zhenya', 'minsk', 'mirror', 'other1', 'other2'];
             let savingsSum = 0;
-            savingsKeys.forEach(key => savingsSum += piggyBanks[key].amount);
+            savingsKeys.forEach(key => {
+                savingsSum += piggyBanks[key].amount;
+            });
             
-            document.getElementById('savings-total').textContent = formatMoney(savingsSum) + ' ₽';
-            document.getElementById('total-balance').textContent = formatMoney(piggyBanks.black.amount + savingsSum) + ' ₽';
+            savingsTotal.textContent = formatMoney(savingsSum) + ' ₽';
+            
+            const total = piggyBanks.black.amount + savingsSum;
+            totalBalance.textContent = formatMoney(total) + ' ₽';
         }
 
         function updateMomProgress() {
@@ -1027,12 +1121,147 @@
             
             document.getElementById('mom-progress-percent').textContent = percent + '%';
             document.getElementById('mom-progress-bar').style.width = percent + '%';
-            document.getElementById('mom-progress-text').textContent = `${formatMoney(amount)} / ${formatMoney(goal)} ₽`;
+            document.getElementById('mom-progress-text').textContent = 
+                `${formatMoney(amount)} / ${formatMoney(goal)} ₽`;
+        }
+
+        function loadFinanceData() {
+            if (!auth.currentUser) return;
+            
+            db.collection(FINANCE_COLLECTION)
+                .orderBy("date", "desc")
+                .onSnapshot((snapshot) => {
+                    transactions = [];
+                    for (let key in piggyBanks) {
+                        piggyBanks[key].amount = 0;
+                    }
+                    
+                    snapshot.forEach((doc) => {
+                        const t = { id: doc.id, ...doc.data() };
+                        transactions.push(t);
+                        
+                        if (t.type === 'income' && t.piggyKey) {
+                            piggyBanks[t.piggyKey].amount += t.amount;
+                        } else if (t.type === 'expense' && t.piggyKey) {
+                            piggyBanks[t.piggyKey].amount -= t.amount;
+                        }
+                    });
+                    
+                    for (let key in piggyBanks) {
+                        const input = document.getElementById(`${key}-amount`);
+                        if (input) {
+                            input.value = piggyBanks[key].amount;
+                        }
+                    }
+                    
+                    updateMomProgress();
+                    recalculateTotals();
+                    filterTransactions();
+                }, (error) => {
+                    console.error("Ошибка загрузки финансов:", error);
+                    transactionList.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-sm text-red-600">
+                                Ошибка загрузки: ${error.message}
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!descriptionInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.classList.remove('show');
+            }
+        });
+
+        window.showSuggestions = function() {
+            filterSuggestions(descriptionInput.value);
+        };
+
+        window.filterSuggestions = function(query) {
+            const filtered = popularOptions.filter(option => 
+                option.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            displaySuggestions(filtered, query);
+        };
+
+        function displaySuggestions(suggestions, query) {
+            if (suggestions.length === 0) {
+                suggestionsContainer.classList.remove('show');
+                return;
+            }
+            
+            let html = '';
+            suggestions.forEach((suggestion, index) => {
+                const highlightedText = suggestion.replace(
+                    new RegExp(query, 'gi'),
+                    match => `<span class="font-medium text-apple-black">${match}</span>`
+                );
+                
+                html += `
+                    <div class="suggestion-item ${index === selectedSuggestionIndex ? 'selected' : ''}" 
+                         onclick="selectSuggestion('${suggestion}')"
+                         onmouseover="selectedSuggestionIndex = ${index}">
+                        ${highlightedText}
+                    </div>
+                `;
+            });
+            
+            suggestionsContainer.innerHTML = html;
+            suggestionsContainer.classList.add('show');
+        }
+
+        window.selectSuggestion = function(value) {
+            descriptionInput.value = value;
+            suggestionsContainer.classList.remove('show');
+            selectedSuggestionIndex = -1;
+        };
+
+        window.handleKeyDown = function(e) {
+            const suggestions = document.querySelectorAll('.suggestion-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestions.length - 1);
+                highlightSuggestion();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+                highlightSuggestion();
+            } else if (e.key === 'Enter' && selectedSuggestionIndex !== -1) {
+                e.preventDefault();
+                const selected = suggestions[selectedSuggestionIndex];
+                if (selected) {
+                    selectSuggestion(selected.textContent);
+                }
+            } else if (e.key === 'Escape') {
+                suggestionsContainer.classList.remove('show');
+                selectedSuggestionIndex = -1;
+            }
+        };
+
+        function highlightSuggestion() {
+            const suggestions = document.querySelectorAll('.suggestion-item');
+            suggestions.forEach((s, i) => {
+                if (i === selectedSuggestionIndex) {
+                    s.classList.add('selected');
+                    s.scrollIntoView({ block: 'nearest' });
+                } else {
+                    s.classList.remove('selected');
+                }
+            });
         }
 
         window.filterTransactions = function() {
             const typeFilter = document.getElementById('filter-type').value;
-            filteredTransactions = transactions.filter(t => typeFilter === 'all' || t.type === typeFilter);
+            
+            filteredTransactions = transactions.filter(t => {
+                if (typeFilter !== 'all' && t.type !== typeFilter) return false;
+                return true;
+            });
+            
             updateUI();
         };
 
@@ -1048,25 +1277,28 @@
             }
             
             if (type === 'expense' && piggyBanks[piggyKey].amount < amount) {
-                if (!confirm(`В копилке "${piggyBanks[piggyKey].name}" ${piggyBanks[piggyKey].amount} ₽. Снять ${amount} ₽?`)) {
+                if (!confirm(`В копилке "${piggyBanks[piggyKey].name}" ${piggyBanks[piggyKey].amount} ₽. Вы уверены что хотите снять ${amount} ₽?`)) {
                     return;
                 }
             }
             
+            let transactionData = {
+                description: description,
+                amount: amount,
+                type: type,
+                piggyKey: piggyKey,
+                piggyName: piggyBanks[piggyKey].name,
+                date: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
             try {
-                await db.collection(FINANCE_COLLECTION).add({
-                    description: description,
-                    amount: amount,
-                    type: type,
-                    piggyKey: piggyKey,
-                    piggyName: piggyBanks[piggyKey].name,
-                    date: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                await db.collection(FINANCE_COLLECTION).add(transactionData);
                 
                 document.getElementById('description').value = '';
                 document.getElementById('amount').value = '';
                 document.getElementById('description').focus();
             } catch (error) {
+                console.error(error);
                 alert('Ошибка при добавлении');
             }
         };
@@ -1083,47 +1315,246 @@
 
         function updateUI() {
             if (filteredTransactions.length === 0) {
-                document.getElementById('transaction-list').innerHTML = '<tr><td colspan="4" class="py-8 text-center text-sm text-apple-gray">Нет операций</td></tr>';
+                transactionList.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-sm text-apple-gray">
+                            Нет операций
+                        </td>
+                    </tr>
+                `;
                 return;
             }
             
             let html = '';
             filteredTransactions.forEach(t => {
-                const date = t.date ? new Date(t.date.seconds * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) : 'сейчас';
+                const date = t.date 
+                    ? new Date(t.date.seconds * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+                    : 'сейчас';
+                
                 const isIncome = t.type === 'income';
                 const amountClass = isIncome ? 'text-green-600' : 'text-red-600';
                 const amountSign = isIncome ? '+' : '−';
                 
-                html += `<tr class="hover:bg-gray-50 transition-colors">
-                    <td class="py-3"><div class="text-sm">${escapeHtml(t.description)}</div><div class="text-[10px] text-apple-gray/70 md:hidden">${date}</div></td>
-                    <td class="py-3"><span class="${amountClass} text-sm font-medium">${amountSign}${formatMoney(t.amount, true)} ₽</span></td>
-                    <td class="py-3"><span class="text-xs text-apple-gray/70">${escapeHtml(t.piggyName || '')}</span></td>
-                    <td class="py-3 text-right">
-                        <button onclick="deleteTransaction('${t.id}')" class="text-apple-gray/50 hover:text-red-600 transition-colors">
-                            <span class="material-symbols-outlined text-base">delete</span>
-                        </button>
-                    </td>
-                </tr>`;
+                html += `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-3">
+                            <div class="text-sm">${escapeHtml(t.description)}</div>
+                            <div class="text-[10px] text-apple-gray/70 md:hidden">${date}</div>
+                        </td>
+                        <td class="py-3">
+                            <span class="${amountClass} text-sm font-medium">${amountSign}${formatMoney(t.amount, true)} ₽</span>
+                        </td>
+                        <td class="py-3">
+                            <span class="text-xs text-apple-gray/70">${escapeHtml(t.piggyName || '')}</span>
+                        </td>
+                        <td class="py-3 text-right">
+                            <button onclick="deleteTransaction('${t.id}')" 
+                                class="text-apple-gray/50 hover:text-red-600 transition-colors">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
-            document.getElementById('transaction-list').innerHTML = html;
+            
+            transactionList.innerHTML = html;
         }
 
-        // ========== УЧЕНИКИ ==========
+        function formatMoney(amount, short = false) {
+            if (amount === undefined || amount === null) return '0';
+            if (short) {
+                if (amount >= 1000) return (amount/1000).toFixed(1) + 'k';
+                return amount.toString();
+            }
+            return amount.toLocaleString('ru-RU');
+        }
+
+        function escapeHtml(text) {
+            if (text === undefined || text === null) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        window.openMonthlyReport = function() {
+            generateMonthlyReport();
+            document.getElementById('analytics-modal').classList.add('show');
+        };
+
+        window.closeMonthlyReport = function() {
+            document.getElementById('analytics-modal').classList.remove('show');
+        };
+
+        function generateMonthlyReport() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            const monthlyTransactions = transactions.filter(t => {
+                if (!t.date) return false;
+                const date = new Date(t.date.seconds * 1000);
+                return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+            });
+            
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let incomeByPiggy = {};
+            let expenseByPiggy = {};
+            
+            monthlyTransactions.forEach(t => {
+                if (t.type === 'income') {
+                    totalIncome += t.amount;
+                    incomeByPiggy[t.piggyName] = (incomeByPiggy[t.piggyName] || 0) + t.amount;
+                } else {
+                    totalExpense += t.amount;
+                    expenseByPiggy[t.piggyName] = (expenseByPiggy[t.piggyName] || 0) + t.amount;
+                }
+            });
+            
+            let html = `
+                <div class="analytics-summary">
+                    <div class="analytics-summary-card">
+                        <div class="analytics-summary-label">Доход</div>
+                        <div class="analytics-summary-value analytics-income">+${formatMoney(totalIncome)} ₽</div>
+                    </div>
+                    <div class="analytics-summary-card">
+                        <div class="analytics-summary-label">Расход</div>
+                        <div class="analytics-summary-value analytics-expense">-${formatMoney(totalExpense)} ₽</div>
+                    </div>
+                    <div class="analytics-summary-card">
+                        <div class="analytics-summary-label">Баланс за месяц</div>
+                        <div class="analytics-summary-value ${totalIncome - totalExpense >= 0 ? 'analytics-income' : 'analytics-expense'}">
+                            ${totalIncome - totalExpense >= 0 ? '+' : '-'}${formatMoney(Math.abs(totalIncome - totalExpense))} ₽
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            if (Object.keys(incomeByPiggy).length > 0) {
+                html += `
+                    <div class="analytics-category-section">
+                        <div class="analytics-category-title">💰 Доходы по копилкам</div>
+                        <div class="analytics-category-grid">
+                `;
+                
+                for (let [piggy, amount] of Object.entries(incomeByPiggy)) {
+                    html += `
+                        <div class="analytics-category-item income">
+                            <span class="analytics-category-name">${piggy}</span>
+                            <span class="analytics-category-amount">+${formatMoney(amount)} ₽</span>
+                        </div>
+                    `;
+                }
+                
+                html += `</div></div>`;
+            }
+            
+            if (Object.keys(expenseByPiggy).length > 0) {
+                html += `
+                    <div class="analytics-category-section">
+                        <div class="analytics-category-title">💸 Расходы по копилкам</div>
+                        <div class="analytics-category-grid">
+                `;
+                
+                for (let [piggy, amount] of Object.entries(expenseByPiggy)) {
+                    html += `
+                        <div class="analytics-category-item expense">
+                            <span class="analytics-category-name">${piggy}</span>
+                            <span class="analytics-category-amount">-${formatMoney(amount)} ₽</span>
+                        </div>
+                    `;
+                }
+                
+                html += `</div></div>`;
+            }
+            
+            if (monthlyTransactions.length > 0) {
+                html += `
+                    <div class="analytics-category-section">
+                        <div class="analytics-category-title">📋 Детальные операции</div>
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Описание</th>
+                                    <th>Копилка</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                const sorted = [...monthlyTransactions].sort((a, b) => {
+                    return (b.date?.seconds || 0) - (a.date?.seconds || 0);
+                });
+                
+                sorted.forEach(t => {
+                    const date = t.date 
+                        ? new Date(t.date.seconds * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+                        : 'сейчас';
+                    
+                    const amountClass = t.type === 'income' ? 'analytics-income' : 'analytics-expense';
+                    const amountSign = t.type === 'income' ? '+' : '−';
+                    
+                    html += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${escapeHtml(t.description)}</td>
+                            <td>${escapeHtml(t.piggyName || '')}</td>
+                            <td class="${amountClass}">${amountSign}${formatMoney(t.amount)} ₽</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `</tbody></table></div>`;
+            } else {
+                html += `<div class="text-center py-8 text-apple-gray">Нет операций за текущий месяц</div>`;
+            }
+            
+            document.getElementById('analytics-content').innerHTML = html;
+        }
+
+        populatePiggySelect();
+
+        document.getElementById('analytics-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMonthlyReport();
+            }
+        });
+
+        // ========== КОД УЧЕНИКОВ ==========
+        let students = Array(30).fill().map((_, i) => ({ id: i + 1, name: '' }));
+        let tableData = {};
+        let rentData = {};
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let currentDay = new Date().getDate();
+        let docId = null;
+
         function loadStudentsData() {
             if (!auth.currentUser) return;
             
-            db.collection('dasha').doc(STUDENTS_DOC)
+            db.collection('dasha').doc('main')
                 .onSnapshot((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         students = data.students || students;
                         tableData = data.tableData || {};
                         rentData = data.rentData || {};
+                        docId = doc.id;
                         
                         setMonthInSelect();
                         renderTable();
+                        scrollToCurrentDay();
                     } else {
-                        console.log('Документа нет. Нужно создать вручную или импортировать данные');
+                        db.collection('dasha').doc('main').set({
+                            students: students,
+                            tableData: {},
+                            rentData: {},
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            docId = 'main';
+                        });
                     }
                 }, (error) => {
                     console.error('Ошибка загрузки учеников:', error);
@@ -1131,7 +1562,9 @@
         }
 
         function saveToFirebase() {
-            db.collection('dasha').doc(STUDENTS_DOC).set({
+            if (!docId) return;
+            
+            db.collection('dasha').doc('main').set({
                 students: students,
                 tableData: tableData,
                 rentData: rentData,
@@ -1144,7 +1577,8 @@
         }
 
         window.changeMonth = function() {
-            currentMonth = parseInt(document.getElementById('monthSelect').value);
+            const select = document.getElementById('monthSelect');
+            currentMonth = parseInt(select.value);
             renderTable();
             saveToFirebase();
         };
@@ -1154,12 +1588,30 @@
             currentMonth = now.getMonth();
             currentYear = now.getFullYear();
             currentDay = now.getDate();
-            document.getElementById('monthSelect').value = currentMonth;
+            
+            const select = document.getElementById('monthSelect');
+            select.value = currentMonth;
+            
             renderTable();
+            scrollToCurrentDay();
         };
 
         function setMonthInSelect() {
-            document.getElementById('monthSelect').value = currentMonth;
+            const select = document.getElementById('monthSelect');
+            select.value = currentMonth;
+        }
+
+        function scrollToCurrentDay() {
+            setTimeout(() => {
+                const currentDayElement = document.querySelector('.current-day-header, .current-day');
+                if (currentDayElement) {
+                    currentDayElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
+                    });
+                }
+            }, 300);
         }
 
         window.onCellChange = async function(i, day) {
@@ -1198,10 +1650,19 @@
             const rentFooter = document.getElementById('rent-footer');
             
             let headerHtml = '';
+            
             for (let day = 1; day <= daysInMonth; day++) {
-                const isCurrentDay = (currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear() && day === currentDay);
-                headerHtml += `<th class="text-center py-3 md:py-4 px-1 md:px-2 font-normal ${isCurrentDay ? 'current-day-header' : 'text-apple-gray'} min-w-[40px] md:min-w-[60px] mobile-header">${day}</th>`;
+                const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                     currentYear === new Date().getFullYear() && 
+                                     day === currentDay);
+                
+                const dayClass = isCurrentDay ? 
+                    'text-center py-3 md:py-4 px-1 md:px-2 font-normal min-w-[40px] md:min-w-[60px] current-day-header mobile-header' : 
+                    'text-center py-3 md:py-4 px-1 md:px-2 font-normal text-apple-gray min-w-[40px] md:min-w-[60px] mobile-header';
+                
+                headerHtml += `<th class="${dayClass}">${day}</th>`;
             }
+            
             headerHtml += '<th class="text-center py-3 md:py-4 px-2 md:px-4 font-normal text-apple-gray min-w-[60px] md:min-w-[80px] mobile-header">ИТОГО</th>';
             headerRow.innerHTML = '<th class="text-left py-3 md:py-4 px-2 md:px-4 font-normal text-apple-gray sticky left-0 bg-gray-50 min-w-[140px] md:min-w-[200px] z-40 mobile-header">Ученики</th>' + headerHtml;
             
@@ -1209,9 +1670,14 @@
             let dayTotals = new Array(daysInMonth + 1).fill(0);
             
             for (let i = 0; i < students.length; i++) {
+                const student = students[i];
                 let studentTotal = 0;
+                
                 tbodyHtml += '<tr class="hover:bg-gray-50/50 transition-colors">';
-                tbodyHtml += `<td class="py-2 md:py-3 px-2 md:px-4 sticky left-0 bg-white z-10"><input type="text" id="student_name_${i}" value="${escapeHtml(students[i].name || '')}" placeholder="Ученик ${i+1}" class="w-full px-2 md:px-3 py-1.5 md:py-2 bg-gray-50 border border-apple-black/10 rounded-xl text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-name-input" onchange="onNameChange(${i})"></td>`;
+                
+                tbodyHtml += `<td class="py-2 md:py-3 px-2 md:px-4 sticky left-0 bg-white z-10"><input type="text" id="student_name_${i}" value="${escapeHtml(student.name || '')}" placeholder="Ученик ${i+1}" 
+                    class="w-full px-2 md:px-3 py-1.5 md:py-2 bg-gray-50 border border-apple-black/10 rounded-xl text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-name-input"
+                    onchange="onNameChange(${i})"></td>`;
                 
                 for (let day = 1; day <= daysInMonth; day++) {
                     const key = `${currentMonth}_${currentYear}_${i}_${day}`;
@@ -1219,34 +1685,65 @@
                     studentTotal += value;
                     dayTotals[day] += value;
                     
-                    const isCurrentDay = (currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear() && day === currentDay);
-                    tbodyHtml += `<td class="py-2 md:py-3 px-0.5 md:px-1 text-center ${isCurrentDay ? 'current-day' : ''} mobile-cell">
-                        <input type="number" id="cell_${i}_${day}" value="${value || ''}" min="0" step="100" class="w-10 md:w-16 px-1 md:px-2 py-1.5 md:py-2 bg-gray-50 border border-apple-black/10 rounded-lg md:rounded-xl text-center text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-input" onchange="onCellChange(${i}, ${day})">
-                    </td>`;
+                    const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                         currentYear === new Date().getFullYear() && 
+                                         day === currentDay);
+                    
+                    const cellClass = isCurrentDay ? 
+                        'py-2 md:py-3 px-0.5 md:px-1 text-center current-day mobile-cell' : 
+                        'py-2 md:py-3 px-0.5 md:px-1 text-center mobile-cell';
+                    
+                    tbodyHtml += `<td class="${cellClass}"><input type="number" id="cell_${i}_${day}" value="${value || ''}" min="0" step="100" 
+                        class="w-10 md:w-16 px-1 md:px-2 py-1.5 md:py-2 bg-gray-50 border border-apple-black/10 rounded-lg md:rounded-xl text-center text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-input"
+                        onchange="onCellChange(${i}, ${day})"></td>`;
                 }
                 
                 tbodyHtml += `<td class="py-2 md:py-3 px-2 md:px-4 text-right font-medium text-xs md:text-sm" id="student_total_${i}">${studentTotal.toLocaleString()} ₽</td>`;
                 tbodyHtml += '</tr>';
             }
+            
             tbody.innerHTML = tbodyHtml;
             
             let footerHtml = '<td class="py-2 md:py-3 px-2 md:px-4 font-medium sticky left-0 bg-gray-50 z-10 text-xs md:text-sm">ИТОГО</td>';
             let monthTotal = 0;
+            
             for (let day = 1; day <= daysInMonth; day++) {
+                const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                     currentYear === new Date().getFullYear() && 
+                                     day === currentDay);
+                
+                const dayClass = isCurrentDay ? 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center font-medium bg-gray-50 current-day text-xs md:text-sm mobile-cell' : 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center font-medium bg-gray-50 text-xs md:text-sm mobile-cell';
+                
+                footerHtml += `<td class="${dayClass}" id="day_total_${day}">${dayTotals[day].toLocaleString()} ₽</td>`;
                 monthTotal += dayTotals[day];
-                footerHtml += `<td class="py-2 md:py-3 px-0.5 md:px-1 text-center font-medium bg-gray-50 text-xs md:text-sm mobile-cell" id="day_total_${day}">${dayTotals[day].toLocaleString()} ₽</td>`;
             }
+            
             footerHtml += `<td class="py-2 md:py-3 px-2 md:px-4 text-right font-medium bg-gray-50 text-xs md:text-sm" id="monthTotal">${monthTotal.toLocaleString()} ₽</td>`;
             footer.innerHTML = footerHtml;
             
             let rentHtml = '<td class="py-2 md:py-3 px-2 md:px-4 font-medium sticky left-0 bg-gray-100/50 z-10 text-apple-gray text-xs md:text-sm">АРЕНДА</td>';
             let totalRent = 0;
+            
             for (let day = 1; day <= daysInMonth; day++) {
                 const key = `${currentMonth}_${currentYear}_rent_${day}`;
                 const rentValue = rentData[key] || 0;
                 totalRent += rentValue;
-                rentHtml += `<td class="py-2 md:py-3 px-0.5 md:px-1 text-center bg-gray-100/50 mobile-cell"><input type="number" id="rent_${day}" value="${rentValue || ''}" min="0" step="100" class="w-10 md:w-16 px-1 md:px-2 py-1.5 md:py-2 bg-white border border-apple-black/10 rounded-lg md:rounded-xl text-center text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-input" onchange="onRentChange(${day})"></td>`;
+                
+                const isCurrentDay = (currentMonth === new Date().getMonth() && 
+                                     currentYear === new Date().getFullYear() && 
+                                     day === currentDay);
+                
+                const cellClass = isCurrentDay ? 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center bg-gray-100/50 current-day mobile-cell' : 
+                    'py-2 md:py-3 px-0.5 md:px-1 text-center bg-gray-100/50 mobile-cell';
+                
+                rentHtml += `<td class="${cellClass}"><input type="number" id="rent_${day}" value="${rentValue || ''}" min="0" step="100" 
+                    class="w-10 md:w-16 px-1 md:px-2 py-1.5 md:py-2 bg-white border border-apple-black/10 rounded-lg md:rounded-xl text-center text-xs md:text-sm focus:outline-none focus:border-apple-black/40 mobile-input"
+                    onchange="onRentChange(${day})"></td>`;
             }
+            
             rentHtml += `<td class="py-2 md:py-3 px-2 md:px-4 text-right font-medium bg-gray-100/50 text-xs md:text-sm" id="totalRentFooter">${totalRent.toLocaleString()} ₽</td>`;
             rentFooter.innerHTML = rentHtml;
             
@@ -1277,15 +1774,23 @@
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayEl = document.getElementById(`day_total_${day}`);
-                if (dayEl) dayEl.textContent = `${dayTotals[day].toLocaleString()} ₽`;
+                if (dayEl) {
+                    dayEl.textContent = `${dayTotals[day].toLocaleString()} ₽`;
+                }
                 monthTotal += dayTotals[day];
                 
                 const rentCell = document.getElementById(`rent_${day}`);
-                if (rentCell) totalRent += parseInt(rentCell.value) || 0;
+                if (rentCell) {
+                    totalRent += parseInt(rentCell.value) || 0;
+                }
             }
             
-            document.getElementById('monthTotal').textContent = `${monthTotal.toLocaleString()} ₽`;
-            document.getElementById('totalRentFooter').textContent = `${totalRent.toLocaleString()} ₽`;
+            const monthTotalEl = document.getElementById('monthTotal');
+            if (monthTotalEl) monthTotalEl.textContent = `${monthTotal.toLocaleString()} ₽`;
+            
+            const totalRentFooter = document.getElementById('totalRentFooter');
+            if (totalRentFooter) totalRentFooter.textContent = `${totalRent.toLocaleString()} ₽`;
+            
             document.getElementById('totalMonth').textContent = `${monthTotal.toLocaleString()} ₽`;
             document.getElementById('totalRent').textContent = `${totalRent.toLocaleString()} ₽`;
             
@@ -1295,31 +1800,10 @@
         function calculateNet(total, rent) {
             const tax = Math.round(total * 0.04);
             const net = total - tax - rent;
+            
             document.getElementById('taxAmount').textContent = `${tax.toLocaleString()} ₽`;
             document.getElementById('netAmount').textContent = `${net.toLocaleString()} ₽`;
         }
-
-        // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
-        function formatMoney(amount, short = false) {
-            if (amount === undefined || amount === null) return '0';
-            if (short && amount >= 1000) return (amount/1000).toFixed(1) + 'k';
-            return amount.toLocaleString('ru-RU');
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Инициализация
-        populatePiggySelect();
-        updatePiggySelectLabel();
-
-        // Для консоли
-        window.db = db;
-        window.auth = auth;
     </script>
 </body>
 </html>
