@@ -1091,15 +1091,25 @@
             populatePiggySelect();
         };
 
-        window.updatePiggyAmount = function(key) {
-            const input = document.getElementById(`${key}-amount`);
-            piggyBanks[key].amount = parseFloat(input.value) || 0;
-            recalculateTotals();
-            
-            if (key === 'mom') {
-                updateMomProgress();
-            }
-        };
+        window.updatePiggyAmount = async function(key) {
+    const input = document.getElementById(`${key}-amount`);
+    piggyBanks[key].amount = parseFloat(input.value) || 0;
+    recalculateTotals();
+    
+    if (key === 'mom') {
+        updateMomProgress();
+    }
+    
+    // СОХРАНЯЕМ ВСЕ КОПИЛКИ В FIREBASE
+    try {
+        await db.collection('piggyBanks').doc('main').set({
+            banks: piggyBanks
+        }, { merge: true });
+        console.log('✅ Копилки сохранены');
+    } catch (error) {
+        console.error('❌ Ошибка сохранения:', error);
+    }
+};
 
         function recalculateTotals() {
             const savingsKeys = ['life', 'mom', 'mypiggy', 'rent', 'katya', 'zhenya', 'minsk', 'mirror', 'other1', 'other2'];
