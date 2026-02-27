@@ -480,79 +480,78 @@
             </div>
         </div>
      
-            
-                <!-- Форма добавления операции -->
-                <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
-                        <div class="col-span-12 md:col-span-3 relative">
-                            <input 
-                                type="text" 
-                                id="description" 
-                                placeholder="От кого / за что" 
-                                class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none focus:border-apple-black/40 text-sm"
-                                autocomplete="off"
-                                onfocus="showSuggestions()"
-                                oninput="filterSuggestions(this.value)"
-                                onkeydown="handleKeyDown(event)"
-                            >
-                            <div id="suggestions" class="suggestions-container"></div>
-                        </div>
-                        
-                        <input type="number" id="amount" placeholder="Сумма" min="0" step="1" inputmode="numeric" class="col-span-6 md:col-span-2 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none text-sm">
-                        
-                        <select id="type" class="col-span-6 md:col-span-2 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm">
-                            <option value="income">Доход</option>
-                            <option value="expense">Расход</option>
-                        </select>
-                        
-                        <select id="piggy-select" class="col-span-12 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm">
-                            <!-- Список копилок будет заполнен через JavaScript -->
-                        </select>
-                        
-                        <button 
-                            onclick="addTransaction()" 
-                            class="col-span-12 md:col-span-2 px-4 py-2.5 bg-apple-black text-white rounded-xl hover:bg-apple-black/90 transition-all text-sm font-medium"
-                        >
-                            Добавить
-                        </button>
-                    </div>
+        <!-- Форма добавления операции -->
+        <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+                <div class="col-span-12 md:col-span-3 relative">
+                    <input 
+                        type="text" 
+                        id="description" 
+                        placeholder="От кого / за что" 
+                        class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none focus:border-apple-black/40 text-sm"
+                        autocomplete="off"
+                        onfocus="showSuggestions()"
+                        oninput="filterSuggestions(this.value)"
+                        onkeydown="handleKeyDown(event)"
+                    >
+                    <div id="suggestions" class="suggestions-container"></div>
                 </div>
                 
-                <!-- История операций -->
-                <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-sm font-medium">История операций</h2>
-                        <div class="flex gap-2">
-                            <select id="filter-type" class="text-xs border border-gray-200/80 rounded-lg px-2 py-1 bg-gray-50" onchange="filterTransactions()">
-                                <option value="all">Все</option>
-                                <option value="income">Доходы</option>
-                                <option value="expense">Расходы</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Описание</th>
-                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Сумма</th>
-                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Копилка</th>
-                                    <th class="text-right py-2 text-xs font-normal text-apple-gray"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="transaction-list" class="divide-y divide-gray-100">
-                                <tr>
-                                    <td colspan="4" class="py-8 text-center text-sm text-apple-gray">
-                                        Загрузка...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+                <input type="number" id="amount" placeholder="Сумма" min="0" step="1" inputmode="numeric" class="col-span-6 md:col-span-2 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none text-sm">
+                
+                <select id="type" class="col-span-6 md:col-span-2 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm" onchange="updatePiggySelectLabel()">
+                    <option value="income">Доход</option>
+                    <option value="expense">Расход</option>
+                </select>
+                
+                <select id="piggy-select" class="col-span-12 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm">
+                    <!-- Список копилок будет заполнен через JavaScript -->
+                </select>
+                
+                <button 
+                    onclick="addTransaction()" 
+                    class="col-span-12 md:col-span-2 px-4 py-2.5 bg-apple-black text-white rounded-xl hover:bg-apple-black/90 transition-all text-sm font-medium"
+                >
+                    Добавить
+                </button>
+            </div>
         </div>
+        
+        <!-- История операций -->
+        <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-medium">История операций</h2>
+                <div class="flex gap-2">
+                    <select id="filter-type" class="text-xs border border-gray-200/80 rounded-lg px-2 py-1 bg-gray-50" onchange="filterTransactions()">
+                        <option value="all">Все</option>
+                        <option value="income">Доходы</option>
+                        <option value="expense">Расходы</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="border-b border-gray-100">
+                        <tr>
+                            <th class="text-left py-2 text-xs font-normal text-apple-gray">Описание</th>
+                            <th class="text-left py-2 text-xs font-normal text-apple-gray">Сумма</th>
+                            <th class="text-left py-2 text-xs font-normal text-apple-gray">Копилка</th>
+                            <th class="text-right py-2 text-xs font-normal text-apple-gray"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-list" class="divide-y divide-gray-100">
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-sm text-apple-gray">
+                                Загрузка...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
 
         <!-- Вкладка УЧЕНИКИ -->
         <div id="studentsApp" class="app-container app-hidden">
@@ -862,6 +861,21 @@ studentsAuth.onAuthStateChanged(async (user) => {
             "Скуратов"
         ];
         
+        // Функция для обновления подписи над выбором копилки
+        window.updatePiggySelectLabel = function() {
+            const type = document.getElementById('type').value;
+            const label = type === 'income' ? 'В какую копилку' : 'Из какой копилки';
+            
+            // Удаляем старую подпись если есть
+            const oldLabel = piggySelect.previousElementSibling;
+            if (oldLabel && oldLabel.tagName === 'SPAN') {
+                oldLabel.remove();
+            }
+            
+            // Добавляем новую подпись
+            piggySelect.insertAdjacentHTML('beforebegin', `<span class="text-xs text-apple-gray mb-1 block">${label}</span>`);
+        };
+        
         // Заполняем выпадающий список копилок
         function populatePiggySelect() {
             let options = '';
@@ -869,6 +883,7 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 options += `<option value="${key}">${piggyBanks[key].name}</option>`;
             }
             piggySelect.innerHTML = options;
+            updatePiggySelectLabel(); // Обновляем подпись при загрузке
         }
         
         // Обновление названий копилок
@@ -956,17 +971,6 @@ studentsAuth.onAuthStateChanged(async (user) => {
                     `;
                 });
         }
-        
-        typeSelect.addEventListener('change', function() {
-            // Меняем текст в зависимости от типа
-            if (this.value === 'income') {
-                piggySelect.previousElementSibling?.remove();
-                piggySelect.insertAdjacentHTML('beforebegin', '<span class="text-xs text-apple-gray mb-1">В какую копилку</span>');
-            } else {
-                piggySelect.previousElementSibling?.remove();
-                piggySelect.insertAdjacentHTML('beforebegin', '<span class="text-xs text-apple-gray mb-1">Из какой копилки</span>');
-            }
-        });
         
         document.addEventListener('click', function(e) {
             if (!descriptionInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
@@ -1075,6 +1079,13 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 return;
             }
             
+            // Проверяем достаточно ли денег для расхода
+            if (type === 'expense' && piggyBanks[piggyKey].amount < amount) {
+                if (!confirm(`В копилке "${piggyBanks[piggyKey].name}" ${piggyBanks[piggyKey].amount} ₽. Вы уверены что хотите снять ${amount} ₽?`)) {
+                    return;
+                }
+            }
+            
             let transactionData = {
                 description: description,
                 amount: amount,
@@ -1171,11 +1182,6 @@ studentsAuth.onAuthStateChanged(async (user) => {
         
         // Инициализация
         populatePiggySelect();
-        
-        // Устанавливаем текст для первого выбора
-        setTimeout(() => {
-            typeSelect.dispatchEvent(new Event('change'));
-        }, 100);
         
         // ========== КОД УЧЕНИКОВ (БЕЗ ИЗМЕНЕНИЙ) ==========
         
