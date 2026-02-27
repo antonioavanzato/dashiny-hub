@@ -396,105 +396,91 @@
         </div>
 
         <!-- Вкладка ФИНАНСЫ -->
-        <div id="financeApp" class="app-container app-visible">
-            <main class="max-w-5xl mx-auto px-3 md:px-10 py-4 md:py-12">
-                
-                <!-- Первая строка: Black и Общий баланс -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <!-- Black (редактируемый) -->
-                    <div class="piggy-bank">
-                        <input type="text" id="black-name" value="Black" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="black-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('black')">
-                    </div>
-                    
-                    <!-- Общий баланс (нередактируемый) -->
-                    <div class="bg-gradient-to-br from-apple-black to-apple-black/90 text-white rounded-apple-md p-4">
-                        <div class="text-xs text-white/60 mb-1">Общий баланс</div>
-                        <div class="text-2xl font-light tracking-tight" id="total-balance">0 ₽</div>
-                    </div>
-                </div>
-                
-                <!-- Вторая строка: Накопительный счет (нередактируемый) -->
-                <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
-                    <div class="text-xs text-apple-gray mb-1">Накопительный счет</div>
-                    <div class="text-2xl font-light text-apple-black" id="savings-total">0 ₽</div>
-                </div>
-                
-                <!-- Третья строка: На жизнь / Мама -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <!-- На жизнь -->
-                    <div class="piggy-bank">
-                        <input type="text" id="life-name" value="На жизнь" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="life-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('life')">
-                    </div>
-                    
-                    <!-- Мама -->
-                    <div class="piggy-bank">
-                        <input type="text" id="mom-name" value="Мама" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="mom-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('mom')">
-                    </div>
-                </div>
-                
-                <!-- Четвертая строка: Моя копилка / Аренда -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <!-- Моя копилка -->
-                    <div class="piggy-bank">
-                        <input type="text" id="mypiggy-name" value="Моя копилка" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="mypiggy-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('mypiggy')">
-                    </div>
-                    
-                    <!-- Аренда -->
-                    <div class="piggy-bank">
-                        <input type="text" id="rent-name" value="Аренда" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="rent-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('rent')">
-                    </div>
-                </div>
-                
-                <!-- Пятая строка: Катя тренировки / Женя тренировки -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <!-- Катя тренировки -->
-                    <div class="piggy-bank">
-                        <input type="text" id="katya-name" value="Катя тренировки" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="katya-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('katya')">
-                    </div>
-                    
-                    <!-- Женя тренировки -->
-                    <div class="piggy-bank">
-                        <input type="text" id="zhenya-name" value="Женя тренировки" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="zhenya-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('zhenya')">
-                    </div>
-                </div>
-                
-                <!-- Шестая строка: Минск / Зеркало -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <!-- Минск -->
-                    <div class="piggy-bank">
-                        <input type="text" id="minsk-name" value="Минск" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="minsk-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('minsk')">
-                    </div>
-                    
-                    <!-- Зеркало -->
-                    <div class="piggy-bank">
-                        <input type="text" id="mirror-name" value="Зеркало" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="mirror-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('mirror')">
-                    </div>
-                </div>
-                
-                <!-- Седьмая строка: Прочее / Прочее -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <!-- Прочее левое -->
-                    <div class="piggy-bank">
-                        <input type="text" id="other1-name" value="Прочее" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="other1-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('other1')">
-                    </div>
-                    
-                    <!-- Прочее правое -->
-                    <div class="piggy-bank">
-                        <input type="text" id="other2-name" value="Прочее" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="other2-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('other2')">
-                    </div>
-                </div>
-                
+<div id="financeApp" class="app-container app-visible">
+    <main class="max-w-5xl mx-auto px-3 md:px-10 py-4 md:py-12">
+        
+        <!-- Первая строка: Black и Общий баланс -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+            <!-- Black (редактируемый) -->
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="black-name" value="Black" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="black-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('black')">
+            </div>
+            
+            <!-- Общий баланс (нередактируемый) -->
+            <div class="bg-gradient-to-br from-apple-black to-apple-black/90 text-white rounded-apple-md p-3 md:p-4">
+                <div class="text-[10px] md:text-xs text-white/60 mb-1">Общий баланс</div>
+                <div class="text-xl md:text-2xl font-light tracking-tight" id="total-balance">0 ₽</div>
+            </div>
+        </div>
+        
+        <!-- Вторая строка: Накопительный счет (нередактируемый) -->
+        <div class="bg-white border border-gray-200/80 rounded-apple-md p-3 md:p-4 mb-3 md:mb-4">
+            <div class="text-[10px] md:text-xs text-apple-gray mb-1">Накопительный счет</div>
+            <div class="text-xl md:text-2xl font-light text-apple-black" id="savings-total">0 ₽</div>
+        </div>
+        
+        <!-- Третья строка: На жизнь / Мама -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="life-name" value="На жизнь" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="life-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('life')">
+            </div>
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="mom-name" value="Мама" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="mom-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('mom')">
+            </div>
+        </div>
+        
+        <!-- Четвертая строка: Моя копилка / Аренда -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="mypiggy-name" value="Моя копилка" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="mypiggy-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('mypiggy')">
+            </div>
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="rent-name" value="Аренда" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="rent-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('rent')">
+            </div>
+        </div>
+        
+        <!-- Пятая строка: Катя тренировки / Женя тренировки -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="katya-name" value="Катя тренировки" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="katya-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('katya')">
+            </div>
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="zhenya-name" value="Женя тренировки" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="zhenya-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('zhenya')">
+            </div>
+        </div>
+        
+        <!-- Шестая строка: Минск / Зеркало -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="minsk-name" value="Минск" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="minsk-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('minsk')">
+            </div>
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="mirror-name" value="Зеркало" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="mirror-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('mirror')">
+            </div>
+        </div>
+        
+        <!-- Седьмая строка: Прочее / Прочее -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="other1-name" value="Прочее" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="other1-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('other1')">
+            </div>
+            <div class="piggy-bank p-3 md:p-4">
+                <input type="text" id="other2-name" value="Прочее" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                <input type="number" id="other2-amount" value="0" min="0" step="1" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('other2')">
+            </div>
+        </div>
+     
+            
                 <!-- Форма добавления операции -->
                 <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
