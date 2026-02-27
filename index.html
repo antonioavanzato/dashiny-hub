@@ -933,10 +933,11 @@
                 document.getElementById('connection-status').className = "text-green-600";
                 
                 // Загружаем данные
-                loadFinanceData();
-                loadStudentsData();
-                
-                switchApp('finance');
+loadFinanceData();
+loadStudentsData();
+loadPiggyBanks();  // ← ЭТУ СТРОКУ ДОБАВЬ
+
+switchApp('finance');
             } else {
                 showLoginScreen();
             }
@@ -1814,6 +1815,35 @@
             document.getElementById('taxAmount').textContent = `${tax.toLocaleString()} ₽`;
             document.getElementById('netAmount').textContent = `${net.toLocaleString()} ₽`;
         }
+        // ========== ЗАГРУЗКА КОПИЛОК ==========
+async function loadPiggyBanks() {
+    if (!auth.currentUser) return;
+    
+    try {
+        const doc = await db.collection('piggyBanks').doc('main').get();
+        if (doc.exists) {
+            const saved = doc.data().banks;
+            if (saved) {
+                piggyBanks = saved;
+                // Обновляем поля ввода
+                for (let key in piggyBanks) {
+                    const input = document.getElementById(`${key}-amount`);
+                    if (input) {
+                        input.value = piggyBanks[key].amount;
+                    }
+                    const nameInput = document.getElementById(`${key}-name`);
+                    if (nameInput) {
+                        nameInput.value = piggyBanks[key].name;
+                    }
+                }
+                recalculateTotals();
+                updateMomProgress();
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки копилок:', error);
+    }
+}
     </script>
 </body>
 </html>
