@@ -1229,21 +1229,22 @@ studentsAuth.onAuthStateChanged(async (user) => {
                         }
                     }
                     
-                    // Обновляем прогресс для мамы
-                    updateMomProgress();
-                    
-                    recalculateTotals();
-                    filterTransactions();
-                }, (error) => {
-                    console.error("Ошибка загрузки финансов:", error);
-                    transactionList.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="py-8 text-center text-sm text-red-600">
-                                Ошибка загрузки: ${error.message}
-                            </td>
-                        </tr>
-                    `;
-                });
+                   // Обновляем прогресс для мамы
+updateMomProgress();
+
+recalculateTotals();
+filterTransactions();
+updateUI(); // ← добавили принудительное обновление списка
+}, (error) => {
+    console.error("Ошибка загрузки финансов:", error);
+    transactionList.innerHTML = `
+        <tr>
+            <td colspan="4" class="py-8 text-center text-sm text-red-600">
+                Ошибка загрузки: ${error.message}
+            </td>
+        </tr>
+    `;
+});
         }
         
         document.addEventListener('click', function(e) {
