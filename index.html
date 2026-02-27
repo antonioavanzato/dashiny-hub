@@ -122,131 +122,6 @@
             background-color: #f3f4f6;
         }
 
-        /* Стили для редактирования процентов */
-        .percentage-input {
-            width: 45px;
-            text-align: center;
-            border: none;
-            background: transparent;
-            font-size: 12px;
-            font-weight: 500;
-            color: #1d1d1f;
-            padding: 2px 0;
-            border-bottom: 1px dashed #d1d1d6;
-        }
-        
-        .percentage-input:focus {
-            outline: none;
-            border-bottom-color: #1d1d1f;
-        }
-        
-        .percentage-edit-icon {
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .percentage-item:hover .percentage-edit-icon {
-            opacity: 0.5;
-        }
-        
-        .percentage-item:hover .percentage-edit-icon:hover {
-            opacity: 1;
-        }
-
-        /* Стили для модального окна */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-        
-        .modal-overlay.show .modal-content {
-            transform: scale(1);
-        }
-        
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid #f0f0f0;
-            display: flex;
-            gap: 10px;
-        }
-        
-        .percentage-slider {
-            width: 100%;
-            height: 4px;
-            background: #e5e7eb;
-            border-radius: 2px;
-            appearance: none;
-        }
-        
-        .percentage-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #1d1d1f;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        
-        .percentage-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .percentage-label {
-            width: 100px;
-            font-size: 14px;
-            color: #6e6e73;
-        }
-        
-        .percentage-value {
-            width: 60px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 500;
-            color: #1d1d1f;
-        }
-
         /* Стили для таблицы учеников */
         .current-day {
             background-color: #fff3e0 !important;
@@ -478,47 +353,11 @@
         <!-- Вкладка ФИНАНСЫ -->
         <div id="financeApp" class="app-container app-visible">
             <main class="max-w-5xl mx-auto px-3 md:px-10 py-4 md:py-12">
-                <!-- Шапка с процентами -->
+                <!-- Шапка без процентов -->
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-apple-black text-2xl">account_balance</span>
                         <h1 class="text-xl font-light tracking-tight">Финансы</h1>
-                    </div>
-                    <div class="flex items-center gap-3 text-xs">
-                        <div class="hidden md:flex gap-3 items-center" id="percentages-container">
-                            <div class="percentage-item flex items-center gap-1">
-                                <span class="text-apple-gray">На жизнь</span>
-                                <input type="number" id="percent-life" value="40" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
-                                <span class="text-apple-gray">%</span>
-                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
-                            </div>
-                            <span class="text-apple-gray/30">·</span>
-                            <div class="percentage-item flex items-center gap-1">
-                                <span class="text-apple-gray">Копилка</span>
-                                <input type="number" id="percent-piggy" value="20" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
-                                <span class="text-apple-gray">%</span>
-                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
-                            </div>
-                            <span class="text-apple-gray/30">·</span>
-                            <div class="percentage-item flex items-center gap-1">
-                                <span class="text-apple-gray">Маме долг</span>
-                                <input type="number" id="percent-debt" value="20" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
-                                <span class="text-apple-gray">%</span>
-                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
-                            </div>
-                            <span class="text-apple-gray/30">·</span>
-                            <div class="percentage-item flex items-center gap-1">
-                                <span class="text-apple-gray">Аренда</span>
-                                <input type="number" id="percent-rent" value="20" min="0" max="100" class="percentage-input" onchange="updatePercentages()">
-                                <span class="text-apple-gray">%</span>
-                                <span class="material-symbols-outlined text-[14px] text-apple-gray/30 percentage-edit-icon">edit</span>
-                            </div>
-                        </div>
-                        
-                        <div class="md:hidden flex items-center gap-1">
-                            <span class="text-apple-gray" id="mobile-percents" onclick="openPercentageModal()">40% · 20% · 20% · 20%</span>
-                            <span class="material-symbols-outlined text-[16px] text-apple-gray/50" onclick="openPercentageModal()">tune</span>
-                        </div>
                     </div>
                 </div>
                 
@@ -528,12 +367,11 @@
                     <div class="text-4xl md:text-5xl font-light tracking-tight" id="total-balance">0 ₽</div>
                 </div>
                 
-                <!-- Категории -->
+                <!-- Категории (упрощенные) -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                     <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-xs text-apple-gray">На жизнь</span>
-                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-life-display">40%</span>
                         </div>
                         <div class="text-xl font-light text-apple-black" id="life-balance">0 ₽</div>
                     </div>
@@ -541,7 +379,6 @@
                     <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-xs text-apple-gray">Копилка</span>
-                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-piggy-display">20%</span>
                         </div>
                         <div class="text-xl font-light text-apple-black" id="piggy-balance">0 ₽</div>
                     </div>
@@ -549,7 +386,6 @@
                     <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-xs text-apple-gray">Маме долг</span>
-                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-debt-display">20%</span>
                         </div>
                         <div class="text-xl font-light text-apple-black" id="debt-balance">0 ₽</div>
                     </div>
@@ -557,7 +393,6 @@
                     <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-xs text-apple-gray">Аренда</span>
-                            <span class="text-[10px] font-medium text-apple-gray/60" id="percent-rent-display">20%</span>
                         </div>
                         <div class="text-xl font-light text-apple-black" id="rent-balance">0 ₽</div>
                     </div>
@@ -608,13 +443,6 @@
                             Добавить
                         </button>
                     </div>
-                    
-                    <div id="distribution-hint" class="grid grid-cols-4 gap-2 mt-3 text-[11px] text-center text-apple-gray/70 border-t border-gray-100 pt-3">
-                        <div>На жизнь<br><span class="font-medium text-apple-black" id="hint-life">40%</span></div>
-                        <div>Копилка<br><span class="font-medium text-apple-black" id="hint-piggy">20%</span></div>
-                        <div>Маме долг<br><span class="font-medium text-apple-black" id="hint-debt">20%</span></div>
-                        <div>Аренда<br><span class="font-medium text-apple-black" id="hint-rent">20%</span></div>
-                    </div>
                 </div>
                 
                 <!-- История операций -->
@@ -636,7 +464,7 @@
                                 <tr>
                                     <th class="text-left py-2 text-xs font-normal text-apple-gray">Описание</th>
                                     <th class="text-left py-2 text-xs font-normal text-apple-gray">Сумма</th>
-                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Распределение</th>
+                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Категория</th>
                                     <th class="text-right py-2 text-xs font-normal text-apple-gray"></th>
                                 </tr>
                             </thead>
@@ -651,51 +479,11 @@
                     </div>
                 </div>
             </main>
-
-            <!-- Модальное окно для настройки процентов -->
-            <div id="percentage-modal" class="modal-overlay">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="text-lg font-medium">Настройка процентов</h3>
-                        <button onclick="closePercentageModal()" class="text-apple-gray/50 hover:text-apple-black">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="percentage-row">
-                            <span class="percentage-label">На жизнь</span>
-                            <input type="range" id="modal-life" class="percentage-slider" value="40" min="0" max="100" oninput="updateModalLife(this.value)">
-                            <span class="percentage-value" id="modal-life-value">40%</span>
-                        </div>
-                        <div class="percentage-row">
-                            <span class="percentage-label">Копилка</span>
-                            <input type="range" id="modal-piggy" class="percentage-slider" value="20" min="0" max="100" oninput="updateModalPiggy(this.value)">
-                            <span class="percentage-value" id="modal-piggy-value">20%</span>
-                        </div>
-                        <div class="percentage-row">
-                            <span class="percentage-label">Маме долг</span>
-                            <input type="range" id="modal-debt" class="percentage-slider" value="20" min="0" max="100" oninput="updateModalDebt(this.value)">
-                            <span class="percentage-value" id="modal-debt-value">20%</span>
-                        </div>
-                        <div class="percentage-row">
-                            <span class="percentage-label">Аренда</span>
-                            <input type="range" id="modal-rent" class="percentage-slider" value="20" min="0" max="100" oninput="updateModalRent(this.value)">
-                            <span class="percentage-value" id="modal-rent-value">20%</span>
-                        </div>
-                        <div class="text-center text-sm text-apple-gray/70 mt-4" id="modal-total">
-                            Сумма: 100%
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="applyPercentages()" class="flex-1 bg-apple-black text-white rounded-xl py-3 text-sm font-medium">Применить</button>
-                        <button onclick="closePercentageModal()" class="flex-1 bg-gray-100 text-apple-black rounded-xl py-3 text-sm font-medium">Отмена</button>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Вкладка УЧЕНИКИ -->
         <div id="studentsApp" class="app-container app-hidden">
+            <!-- Код учеников остается без изменений -->
             <main class="max-w-7xl mx-auto px-2 md:px-6 py-2 md:py-8">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 md:mb-6 mobile-px">
                     <div class="flex items-center gap-2">
@@ -973,13 +761,6 @@ studentsAuth.onAuthStateChanged(async (user) => {
         let filteredTransactions = [];
         let selectedSuggestionIndex = -1;
         
-        let percentages = {
-            life: 40,
-            piggy: 20,
-            debt: 20,
-            rent: 20
-        };
-        
         let balances = {
             total: 0,
             life: 0,
@@ -997,37 +778,8 @@ studentsAuth.onAuthStateChanged(async (user) => {
         const transactionList = document.getElementById('transaction-list');
         const typeSelect = document.getElementById('type');
         const expenseCategory = document.getElementById('expense-category');
-        const distributionHint = document.getElementById('distribution-hint');
         const descriptionInput = document.getElementById('description');
         const suggestionsContainer = document.getElementById('suggestions');
-        
-        const percentLifeInput = document.getElementById('percent-life');
-        const percentPiggyInput = document.getElementById('percent-piggy');
-        const percentDebtInput = document.getElementById('percent-debt');
-        const percentRentInput = document.getElementById('percent-rent');
-        
-        const percentLifeDisplay = document.getElementById('percent-life-display');
-        const percentPiggyDisplay = document.getElementById('percent-piggy-display');
-        const percentDebtDisplay = document.getElementById('percent-debt-display');
-        const percentRentDisplay = document.getElementById('percent-rent-display');
-        
-        const hintLife = document.getElementById('hint-life');
-        const hintPiggy = document.getElementById('hint-piggy');
-        const hintDebt = document.getElementById('hint-debt');
-        const hintRent = document.getElementById('hint-rent');
-        
-        const mobilePercents = document.getElementById('mobile-percents');
-        
-        const modal = document.getElementById('percentage-modal');
-        const modalLife = document.getElementById('modal-life');
-        const modalPiggy = document.getElementById('modal-piggy');
-        const modalDebt = document.getElementById('modal-debt');
-        const modalRent = document.getElementById('modal-rent');
-        const modalLifeValue = document.getElementById('modal-life-value');
-        const modalPiggyValue = document.getElementById('modal-piggy-value');
-        const modalDebtValue = document.getElementById('modal-debt-value');
-        const modalRentValue = document.getElementById('modal-rent-value');
-        const modalTotal = document.getElementById('modal-total');
         
         const popularOptions = [
             "Такси", "Продукты", "Аренда", "WB", "Ozon", 
@@ -1062,99 +814,11 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 });
         }
         
-        window.openPercentageModal = function() {
-            modalLife.value = percentages.life;
-            modalPiggy.value = percentages.piggy;
-            modalDebt.value = percentages.debt;
-            modalRent.value = percentages.rent;
-            
-            modalLifeValue.textContent = percentages.life + '%';
-            modalPiggyValue.textContent = percentages.piggy + '%';
-            modalDebtValue.textContent = percentages.debt + '%';
-            modalRentValue.textContent = percentages.rent + '%';
-            
-            updateModalTotal();
-            modal.classList.add('show');
-        };
-        
-        window.closePercentageModal = function() {
-            modal.classList.remove('show');
-        };
-        
-        window.updateModalLife = function(value) {
-            modalLifeValue.textContent = value + '%';
-            updateModalTotal();
-        };
-        
-        window.updateModalPiggy = function(value) {
-            modalPiggyValue.textContent = value + '%';
-            updateModalTotal();
-        };
-        
-        window.updateModalDebt = function(value) {
-            modalDebtValue.textContent = value + '%';
-            updateModalTotal();
-        };
-        
-        window.updateModalRent = function(value) {
-            modalRentValue.textContent = value + '%';
-            updateModalTotal();
-        };
-        
-        function updateModalTotal() {
-            const total = parseInt(modalLife.value) + parseInt(modalPiggy.value) + 
-                         parseInt(modalDebt.value) + parseInt(modalRent.value);
-            
-            modalTotal.textContent = 'Сумма: ' + total + '%';
-            
-            if (total !== 100) {
-                modalTotal.style.color = '#ef4444';
-            } else {
-                modalTotal.style.color = '#6e6e73';
-            }
-        }
-        
-        window.applyPercentages = function() {
-            percentages.life = parseInt(modalLife.value);
-            percentages.piggy = parseInt(modalPiggy.value);
-            percentages.debt = parseInt(modalDebt.value);
-            percentages.rent = parseInt(modalRent.value);
-            
-            percentLifeInput.value = percentages.life;
-            percentPiggyInput.value = percentages.piggy;
-            percentDebtInput.value = percentages.debt;
-            percentRentInput.value = percentages.rent;
-            
-            updatePercentages();
-            closePercentageModal();
-        };
-        
-        window.updatePercentages = function() {
-            percentages.life = parseInt(percentLifeInput.value) || 0;
-            percentages.piggy = parseInt(percentPiggyInput.value) || 0;
-            percentages.debt = parseInt(percentDebtInput.value) || 0;
-            percentages.rent = parseInt(percentRentInput.value) || 0;
-            
-            percentLifeDisplay.textContent = percentages.life + '%';
-            percentPiggyDisplay.textContent = percentages.piggy + '%';
-            percentDebtDisplay.textContent = percentages.debt + '%';
-            percentRentDisplay.textContent = percentages.rent + '%';
-            
-            hintLife.textContent = percentages.life + '%';
-            hintPiggy.textContent = percentages.piggy + '%';
-            hintDebt.textContent = percentages.debt + '%';
-            hintRent.textContent = percentages.rent + '%';
-            
-            mobilePercents.textContent = percentages.life + '% · ' + percentages.piggy + '% · ' + percentages.debt + '% · ' + percentages.rent + '%';
-        };
-        
         typeSelect.addEventListener('change', function() {
             if (this.value === 'expense') {
                 expenseCategory.classList.remove('hidden');
-                distributionHint.style.display = 'none';
             } else {
                 expenseCategory.classList.add('hidden');
-                distributionHint.style.display = 'grid';
             }
         });
         
@@ -1294,27 +958,11 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 description: description,
                 amount: amount,
                 type: type,
-                date: firebase.firestore.FieldValue.serverTimestamp(),
-                percentages: { ...percentages }
+                date: firebase.firestore.FieldValue.serverTimestamp()
             };
             
             if (type === 'income') {
-                let lifeAmount = Math.floor(amount * percentages.life / 100);
-                let piggyAmount = Math.floor(amount * percentages.piggy / 100);
-                let debtAmount = Math.floor(amount * percentages.debt / 100);
-                let rentAmount = Math.floor(amount * percentages.rent / 100);
-                
-                const totalDistributed = lifeAmount + piggyAmount + debtAmount + rentAmount;
-                const difference = amount - totalDistributed;
-                
-                if (difference !== 0) {
-                    lifeAmount += difference;
-                }
-                
-                transactionData.lifeAmount = lifeAmount;
-                transactionData.piggyAmount = piggyAmount;
-                transactionData.debtAmount = debtAmount;
-                transactionData.rentAmount = rentAmount;
+                // При доходе просто сохраняем сумму без распределения по категориям
                 transactionData.categoryDisplay = 'Доход';
             } else {
                 const category = document.getElementById('expense-category').value;
@@ -1373,18 +1021,11 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 const amountClass = isIncome ? 'text-green-600' : 'text-red-600';
                 const amountSign = isIncome ? '+' : '−';
                 
-                let distribution = '';
+                let categoryDisplay = '';
                 if (isIncome) {
-                    distribution = `
-                        <div class="text-xs text-apple-gray/70">
-                            На жизнь ${formatMoney(t.lifeAmount, true)} · 
-                            Копилка ${formatMoney(t.piggyAmount, true)} · 
-                            Маме долг ${formatMoney(t.debtAmount, true)} · 
-                            Аренда ${formatMoney(t.rentAmount, true)}
-                        </div>
-                    `;
+                    categoryDisplay = '<span class="text-xs text-apple-gray/70">Доход</span>';
                 } else {
-                    distribution = `<span class="text-xs text-apple-gray/70">${t.categoryDisplay || 'Расход'}</span>`;
+                    categoryDisplay = `<span class="text-xs text-apple-gray/70">${t.categoryDisplay || 'Расход'}</span>`;
                 }
                 
                 html += `
@@ -1397,7 +1038,7 @@ studentsAuth.onAuthStateChanged(async (user) => {
                             <span class="${amountClass} text-sm font-medium">${amountSign}${formatMoney(t.amount, true)} ₽</span>
                         </td>
                         <td class="py-3">
-                            ${distribution}
+                            ${categoryDisplay}
                         </td>
                         <td class="py-3 text-right">
                             <button onclick="deleteTransaction('${t.id}')" 
@@ -1428,25 +1069,10 @@ studentsAuth.onAuthStateChanged(async (user) => {
             return div.innerHTML;
         }
         
-        distributionHint.style.display = 'grid';
         expenseCategory.classList.add('hidden');
         
-        if (percentLifeInput) {
-            percentLifeInput.addEventListener('change', updatePercentages);
-            percentPiggyInput.addEventListener('change', updatePercentages);
-            percentDebtInput.addEventListener('change', updatePercentages);
-            percentRentInput.addEventListener('change', updatePercentages);
-        }
-        
-        updatePercentages();
-        
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closePercentageModal();
-            }
-        });
-        
         // ========== КОД ИЗ ПРИЛОЖЕНИЯ УЧЕНИКОВ ==========
+        // (оставляем без изменений)
         
         let students = Array(30).fill().map((_, i) => ({ id: i + 1, name: '' }));
         let tableData = {};
