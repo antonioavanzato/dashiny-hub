@@ -122,6 +122,51 @@
             background-color: #f3f4f6;
         }
 
+        /* Стили для редактируемых блоков копилок */
+        .piggy-bank {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.2s;
+        }
+        
+        .piggy-bank:hover {
+            border-color: #1d1d1f;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .piggy-name-input {
+            width: 100%;
+            font-size: 14px;
+            color: #86868b;
+            border: none;
+            background: transparent;
+            padding: 4px 0;
+            border-bottom: 1px dashed #d1d1d6;
+            margin-bottom: 8px;
+        }
+        
+        .piggy-name-input:focus {
+            outline: none;
+            border-bottom-color: #1d1d1f;
+        }
+        
+        .piggy-amount-input {
+            width: 100%;
+            font-size: 20px;
+            font-weight: 300;
+            color: #1d1d1f;
+            border: none;
+            background: transparent;
+            padding: 4px 0;
+        }
+        
+        .piggy-amount-input:focus {
+            outline: none;
+            border-bottom: 1px solid #1d1d1f;
+        }
+
         /* Стили для таблицы учеников */
         .current-day {
             background-color: #fff3e0 !important;
@@ -353,55 +398,107 @@
         <!-- Вкладка ФИНАНСЫ -->
         <div id="financeApp" class="app-container app-visible">
             <main class="max-w-5xl mx-auto px-3 md:px-10 py-4 md:py-12">
-                <!-- Шапка без процентов -->
-                <div class="flex justify-between items-center mb-4">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-apple-black text-2xl">account_balance</span>
-                        <h1 class="text-xl font-light tracking-tight">Финансы</h1>
+                
+                <!-- Первая строка: Black и Общий баланс -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Black (редактируемый) -->
+                    <div class="piggy-bank">
+                        <input type="text" id="black-name" value="Black" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="black-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('black')">
+                    </div>
+                    
+                    <!-- Общий баланс (нередактируемый) -->
+                    <div class="bg-gradient-to-br from-apple-black to-apple-black/90 text-white rounded-apple-md p-4">
+                        <div class="text-xs text-white/60 mb-1">Общий баланс</div>
+                        <div class="text-2xl font-light tracking-tight" id="total-balance">0 ₽</div>
                     </div>
                 </div>
                 
-                <!-- Общий баланс -->
-                <div class="bg-gradient-to-br from-apple-black to-apple-black/90 text-white rounded-apple-md p-6 mb-4">
-                    <div class="text-xs text-white/60 mb-1">Общий баланс</div>
-                    <div class="text-4xl md:text-5xl font-light tracking-tight" id="total-balance">0 ₽</div>
+                <!-- Вторая строка: Накопительный счет (нередактируемый) -->
+                <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
+                    <div class="text-xs text-apple-gray mb-1">Накопительный счет</div>
+                    <div class="text-2xl font-light text-apple-black" id="savings-total">0 ₽</div>
                 </div>
                 
-                <!-- Категории (упрощенные) -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs text-apple-gray">На жизнь</span>
-                        </div>
-                        <div class="text-xl font-light text-apple-black" id="life-balance">0 ₽</div>
+                <!-- Третья строка: На жизнь / Мама -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- На жизнь -->
+                    <div class="piggy-bank">
+                        <input type="text" id="life-name" value="На жизнь" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="life-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('life')">
                     </div>
                     
-                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs text-apple-gray">Копилка</span>
-                        </div>
-                        <div class="text-xl font-light text-apple-black" id="piggy-balance">0 ₽</div>
-                    </div>
-                    
-                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs text-apple-gray">Маме долг</span>
-                        </div>
-                        <div class="text-xl font-light text-apple-black" id="debt-balance">0 ₽</div>
-                    </div>
-                    
-                    <div class="bg-white border border-gray-200/80 rounded-apple-md p-4">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs text-apple-gray">Аренда</span>
-                        </div>
-                        <div class="text-xl font-light text-apple-black" id="rent-balance">0 ₽</div>
+                    <!-- Мама -->
+                    <div class="piggy-bank">
+                        <input type="text" id="mom-name" value="Мама" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="mom-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('mom')">
                     </div>
                 </div>
                 
-                <!-- Форма добавления -->
+                <!-- Четвертая строка: Моя копилка / Аренда -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Моя копилка -->
+                    <div class="piggy-bank">
+                        <input type="text" id="mypiggy-name" value="Моя копилка" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="mypiggy-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('mypiggy')">
+                    </div>
+                    
+                    <!-- Аренда -->
+                    <div class="piggy-bank">
+                        <input type="text" id="rent-name" value="Аренда" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="rent-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('rent')">
+                    </div>
+                </div>
+                
+                <!-- Пятая строка: Катя тренировки / Женя тренировки -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Катя тренировки -->
+                    <div class="piggy-bank">
+                        <input type="text" id="katya-name" value="Катя тренировки" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="katya-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('katya')">
+                    </div>
+                    
+                    <!-- Женя тренировки -->
+                    <div class="piggy-bank">
+                        <input type="text" id="zhenya-name" value="Женя тренировки" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="zhenya-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('zhenya')">
+                    </div>
+                </div>
+                
+                <!-- Шестая строка: Минск / Зеркало -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Минск -->
+                    <div class="piggy-bank">
+                        <input type="text" id="minsk-name" value="Минск" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="minsk-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('minsk')">
+                    </div>
+                    
+                    <!-- Зеркало -->
+                    <div class="piggy-bank">
+                        <input type="text" id="mirror-name" value="Зеркало" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="mirror-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('mirror')">
+                    </div>
+                </div>
+                
+                <!-- Седьмая строка: Прочее / Прочее -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <!-- Прочее левое -->
+                    <div class="piggy-bank">
+                        <input type="text" id="other1-name" value="Прочее" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="other1-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('other1')">
+                    </div>
+                    
+                    <!-- Прочее правое -->
+                    <div class="piggy-bank">
+                        <input type="text" id="other2-name" value="Прочее" class="piggy-name-input" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="number" id="other2-amount" value="0" min="0" step="1" class="piggy-amount-input" onchange="updatePiggyAmount('other2')">
+                    </div>
+                </div>
+                
+                <!-- Форма добавления операции -->
                 <div class="bg-white border border-gray-200/80 rounded-apple-md p-4 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
-                        <div class="col-span-12 md:col-span-4 relative">
+                        <div class="col-span-12 md:col-span-3 relative">
                             <input 
                                 type="text" 
                                 id="description" 
@@ -421,7 +518,7 @@
                             placeholder="Сумма" 
                             min="0" 
                             step="1"
-                            class="col-span-6 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none text-sm"
+                            class="col-span-6 md:col-span-2 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:outline-none text-sm"
                         >
                         
                         <select id="type" class="col-span-6 md:col-span-2 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm">
@@ -429,16 +526,13 @@
                             <option value="expense">Расход</option>
                         </select>
                         
-                        <select id="expense-category" class="col-span-12 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm hidden">
-                            <option value="life">На жизнь</option>
-                            <option value="piggy">Копилка</option>
-                            <option value="debt">Маме долг</option>
-                            <option value="rent">Аренда</option>
+                        <select id="piggy-select" class="col-span-12 md:col-span-3 px-3 py-2.5 bg-gray-50 border border-gray-200/60 rounded-xl text-sm">
+                            <!-- Список копилок будет заполнен через JavaScript -->
                         </select>
                         
                         <button 
                             onclick="addTransaction()" 
-                            class="col-span-12 md:col-span-12 px-4 py-2.5 bg-apple-black text-white rounded-xl hover:bg-apple-black/90 transition-all text-sm font-medium"
+                            class="col-span-12 md:col-span-2 px-4 py-2.5 bg-apple-black text-white rounded-xl hover:bg-apple-black/90 transition-all text-sm font-medium"
                         >
                             Добавить
                         </button>
@@ -464,7 +558,7 @@
                                 <tr>
                                     <th class="text-left py-2 text-xs font-normal text-apple-gray">Описание</th>
                                     <th class="text-left py-2 text-xs font-normal text-apple-gray">Сумма</th>
-                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Категория</th>
+                                    <th class="text-left py-2 text-xs font-normal text-apple-gray">Копилка</th>
                                     <th class="text-right py-2 text-xs font-normal text-apple-gray"></th>
                                 </tr>
                             </thead>
@@ -483,7 +577,6 @@
 
         <!-- Вкладка УЧЕНИКИ -->
         <div id="studentsApp" class="app-container app-hidden">
-            <!-- Код учеников остается без изменений -->
             <main class="max-w-7xl mx-auto px-2 md:px-6 py-2 md:py-8">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 md:mb-6 mobile-px">
                     <div class="flex items-center gap-2">
@@ -753,7 +846,7 @@ studentsAuth.onAuthStateChanged(async (user) => {
             }
         };
         
-        // ========== КОД ИЗ ФИНАНСОВОГО ПРИЛОЖЕНИЯ ==========
+        // ========== КОД ФИНАНСОВ С НОВОЙ СТРУКТУРОЙ ==========
         
         const COLLECTION_NAME = "dasha_finances_final";
         
@@ -761,23 +854,27 @@ studentsAuth.onAuthStateChanged(async (user) => {
         let filteredTransactions = [];
         let selectedSuggestionIndex = -1;
         
-        let balances = {
-            total: 0,
-            life: 0,
-            piggy: 0,
-            debt: 0,
-            rent: 0
+        // Объект с данными всех копилок
+        let piggyBanks = {
+            black: { name: 'Black', amount: 0 },
+            life: { name: 'На жизнь', amount: 0 },
+            mom: { name: 'Мама', amount: 0 },
+            mypiggy: { name: 'Моя копилка', amount: 0 },
+            rent: { name: 'Аренда', amount: 0 },
+            katya: { name: 'Катя тренировки', amount: 0 },
+            zhenya: { name: 'Женя тренировки', amount: 0 },
+            minsk: { name: 'Минск', amount: 0 },
+            mirror: { name: 'Зеркало', amount: 0 },
+            other1: { name: 'Прочее', amount: 0 },
+            other2: { name: 'Прочее', amount: 0 }
         };
         
         // Элементы финансов
         const totalBalance = document.getElementById('total-balance');
-        const lifeBalance = document.getElementById('life-balance');
-        const piggyBalance = document.getElementById('piggy-balance');
-        const debtBalance = document.getElementById('debt-balance');
-        const rentBalance = document.getElementById('rent-balance');
+        const savingsTotal = document.getElementById('savings-total');
         const transactionList = document.getElementById('transaction-list');
         const typeSelect = document.getElementById('type');
-        const expenseCategory = document.getElementById('expense-category');
+        const piggySelect = document.getElementById('piggy-select');
         const descriptionInput = document.getElementById('description');
         const suggestionsContainer = document.getElementById('suggestions');
         
@@ -786,6 +883,55 @@ studentsAuth.onAuthStateChanged(async (user) => {
             "Скуратов"
         ];
         
+        // Заполняем выпадающий список копилок
+        function populatePiggySelect() {
+            let options = '';
+            for (let key in piggyBanks) {
+                options += `<option value="${key}">${piggyBanks[key].name}</option>`;
+            }
+            piggySelect.innerHTML = options;
+        }
+        
+        // Обновление названий копилок
+        window.updatePiggyNames = function() {
+            piggyBanks.black.name = document.getElementById('black-name').value || 'Black';
+            piggyBanks.life.name = document.getElementById('life-name').value || 'На жизнь';
+            piggyBanks.mom.name = document.getElementById('mom-name').value || 'Мама';
+            piggyBanks.mypiggy.name = document.getElementById('mypiggy-name').value || 'Моя копилка';
+            piggyBanks.rent.name = document.getElementById('rent-name').value || 'Аренда';
+            piggyBanks.katya.name = document.getElementById('katya-name').value || 'Катя тренировки';
+            piggyBanks.zhenya.name = document.getElementById('zhenya-name').value || 'Женя тренировки';
+            piggyBanks.minsk.name = document.getElementById('minsk-name').value || 'Минск';
+            piggyBanks.mirror.name = document.getElementById('mirror-name').value || 'Зеркало';
+            piggyBanks.other1.name = document.getElementById('other1-name').value || 'Прочее';
+            piggyBanks.other2.name = document.getElementById('other2-name').value || 'Прочее';
+            
+            populatePiggySelect();
+        };
+        
+        // Обновление суммы копилки
+        window.updatePiggyAmount = function(key) {
+            const input = document.getElementById(`${key}-amount`);
+            piggyBanks[key].amount = parseFloat(input.value) || 0;
+            recalculateTotals();
+        };
+        
+        // Пересчет общих сумм
+        function recalculateTotals() {
+            // Сумма всех нижних копилок (все кроме black)
+            const savingsKeys = ['life', 'mom', 'mypiggy', 'rent', 'katya', 'zhenya', 'minsk', 'mirror', 'other1', 'other2'];
+            let savingsSum = 0;
+            savingsKeys.forEach(key => {
+                savingsSum += piggyBanks[key].amount;
+            });
+            
+            savingsTotal.textContent = formatMoney(savingsSum) + ' ₽';
+            
+            // Общий баланс = black + накопительный
+            const total = piggyBanks.black.amount + savingsSum;
+            totalBalance.textContent = formatMoney(total) + ' ₽';
+        }
+        
         function loadFinanceData() {
             if (!financeAuth.currentUser) return;
             
@@ -793,15 +939,33 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 .orderBy("date", "desc")
                 .onSnapshot((snapshot) => {
                     transactions = [];
+                    // Сброс сумм копилок
+                    for (let key in piggyBanks) {
+                        piggyBanks[key].amount = 0;
+                    }
+                    
                     snapshot.forEach((doc) => {
-                        transactions.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
+                        const t = { id: doc.id, ...doc.data() };
+                        transactions.push(t);
+                        
+                        // Обновляем суммы копилок из истории
+                        if (t.type === 'income' && t.piggyKey) {
+                            piggyBanks[t.piggyKey].amount += t.amount;
+                        } else if (t.type === 'expense' && t.piggyKey) {
+                            piggyBanks[t.piggyKey].amount -= t.amount;
+                        }
                     });
                     
+                    // Обновляем поля ввода
+                    for (let key in piggyBanks) {
+                        const input = document.getElementById(`${key}-amount`);
+                        if (input) {
+                            input.value = piggyBanks[key].amount;
+                        }
+                    }
+                    
+                    recalculateTotals();
                     filterTransactions();
-                    calculateBalances();
                 }, (error) => {
                     console.error("Ошибка загрузки финансов:", error);
                     transactionList.innerHTML = `
@@ -815,10 +979,13 @@ studentsAuth.onAuthStateChanged(async (user) => {
         }
         
         typeSelect.addEventListener('change', function() {
-            if (this.value === 'expense') {
-                expenseCategory.classList.remove('hidden');
+            // Меняем текст в зависимости от типа
+            if (this.value === 'income') {
+                piggySelect.previousElementSibling?.remove();
+                piggySelect.insertAdjacentHTML('beforebegin', '<span class="text-xs text-apple-gray mb-1">В какую копилку</span>');
             } else {
-                expenseCategory.classList.add('hidden');
+                piggySelect.previousElementSibling?.remove();
+                piggySelect.insertAdjacentHTML('beforebegin', '<span class="text-xs text-apple-gray mb-1">Из какой копилки</span>');
             }
         });
         
@@ -918,36 +1085,11 @@ studentsAuth.onAuthStateChanged(async (user) => {
             updateUI();
         };
         
-        function calculateBalances() {
-            balances = { total: 0, life: 0, piggy: 0, debt: 0, rent: 0 };
-            
-            transactions.forEach(t => {
-                if (t.type === 'income') {
-                    balances.total += t.amount;
-                    balances.life += t.lifeAmount || 0;
-                    balances.piggy += t.piggyAmount || 0;
-                    balances.debt += t.debtAmount || 0;
-                    balances.rent += t.rentAmount || 0;
-                } else {
-                    balances.total -= t.amount;
-                    if (t.category === 'life') balances.life -= t.amount;
-                    else if (t.category === 'piggy') balances.piggy -= t.amount;
-                    else if (t.category === 'debt') balances.debt -= t.amount;
-                    else if (t.category === 'rent') balances.rent -= t.amount;
-                }
-            });
-            
-            totalBalance.textContent = formatMoney(balances.total) + ' ₽';
-            lifeBalance.textContent = formatMoney(balances.life) + ' ₽';
-            piggyBalance.textContent = formatMoney(balances.piggy) + ' ₽';
-            debtBalance.textContent = formatMoney(balances.debt) + ' ₽';
-            rentBalance.textContent = formatMoney(balances.rent) + ' ₽';
-        }
-        
         window.addTransaction = async function() {
             const description = document.getElementById('description').value.trim();
             const amount = parseFloat(document.getElementById('amount').value);
             const type = document.getElementById('type').value;
+            const piggyKey = document.getElementById('piggy-select').value;
             
             if (!description || isNaN(amount) || amount <= 0) {
                 alert('Заполните все поля');
@@ -958,24 +1100,10 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 description: description,
                 amount: amount,
                 type: type,
+                piggyKey: piggyKey,
+                piggyName: piggyBanks[piggyKey].name,
                 date: firebase.firestore.FieldValue.serverTimestamp()
             };
-            
-            if (type === 'income') {
-                // При доходе просто сохраняем сумму без распределения по категориям
-                transactionData.categoryDisplay = 'Доход';
-            } else {
-                const category = document.getElementById('expense-category').value;
-                transactionData.category = category;
-                
-                const categoryNames = {
-                    'life': 'На жизнь',
-                    'piggy': 'Копилка',
-                    'debt': 'Маме долг',
-                    'rent': 'Аренда'
-                };
-                transactionData.categoryDisplay = categoryNames[category];
-            }
             
             try {
                 await financeDb.collection(COLLECTION_NAME).add(transactionData);
@@ -1021,13 +1149,6 @@ studentsAuth.onAuthStateChanged(async (user) => {
                 const amountClass = isIncome ? 'text-green-600' : 'text-red-600';
                 const amountSign = isIncome ? '+' : '−';
                 
-                let categoryDisplay = '';
-                if (isIncome) {
-                    categoryDisplay = '<span class="text-xs text-apple-gray/70">Доход</span>';
-                } else {
-                    categoryDisplay = `<span class="text-xs text-apple-gray/70">${t.categoryDisplay || 'Расход'}</span>`;
-                }
-                
                 html += `
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="py-3">
@@ -1038,7 +1159,7 @@ studentsAuth.onAuthStateChanged(async (user) => {
                             <span class="${amountClass} text-sm font-medium">${amountSign}${formatMoney(t.amount, true)} ₽</span>
                         </td>
                         <td class="py-3">
-                            ${categoryDisplay}
+                            <span class="text-xs text-apple-gray/70">${escapeHtml(t.piggyName || '')}</span>
                         </td>
                         <td class="py-3 text-right">
                             <button onclick="deleteTransaction('${t.id}')" 
@@ -1069,10 +1190,15 @@ studentsAuth.onAuthStateChanged(async (user) => {
             return div.innerHTML;
         }
         
-        expenseCategory.classList.add('hidden');
+        // Инициализация
+        populatePiggySelect();
         
-        // ========== КОД ИЗ ПРИЛОЖЕНИЯ УЧЕНИКОВ ==========
-        // (оставляем без изменений)
+        // Устанавливаем текст для первого выбора
+        setTimeout(() => {
+            typeSelect.dispatchEvent(new Event('change'));
+        }, 100);
+        
+        // ========== КОД УЧЕНИКОВ (БЕЗ ИЗМЕНЕНИЙ) ==========
         
         let students = Array(30).fill().map((_, i) => ({ id: i + 1, name: '' }));
         let tableData = {};
