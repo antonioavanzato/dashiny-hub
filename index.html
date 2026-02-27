@@ -326,6 +326,187 @@
             background: #e5e7eb;
         }
 
+        /* Стили для кнопки аналитики */
+        .analytics-button {
+            padding: 6px 12px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .analytics-button:hover {
+            background: #e5e7eb;
+        }
+
+        /* Стили для модального окна аналитики */
+        .analytics-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .analytics-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .analytics-modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .analytics-modal-overlay.show .analytics-modal-content {
+            transform: scale(1);
+        }
+
+        .analytics-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .analytics-modal-body {
+            padding: 20px;
+        }
+
+        .analytics-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-summary-card {
+            background: #f9f9f9;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .analytics-summary-card.income {
+            background: #e6f7e6;
+        }
+
+        .analytics-summary-card.expense {
+            background: #ffe6e6;
+        }
+
+        .analytics-summary-label {
+            font-size: 12px;
+            color: #6e6e73;
+            margin-bottom: 5px;
+        }
+
+        .analytics-summary-value {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .analytics-category-section {
+            margin-bottom: 25px;
+        }
+
+        .analytics-category-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .analytics-category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .analytics-category-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .analytics-category-item.income {
+            background: #e6f7e6;
+        }
+
+        .analytics-category-item.expense {
+            background: #ffe6e6;
+        }
+
+        .analytics-category-name {
+            color: #1d1d1f;
+        }
+
+        .analytics-category-amount {
+            font-weight: 500;
+        }
+
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .analytics-table th {
+            text-align: left;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6e6e73;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .analytics-table td {
+            padding: 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .analytics-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .analytics-income {
+            color: #10b981;
+        }
+
+        .analytics-expense {
+            color: #ef4444;
+        }
+
         /* Стили для таблицы */
         table {
             border-collapse: collapse;
@@ -386,6 +567,10 @@
                     
                     <div class="flex items-center gap-3">
                         <div id="connection-status" class="text-green-600">●</div>
+                        <button class="analytics-button" onclick="openMonthlyReport()">
+                            <span class="material-symbols-outlined text-[14px]">analytics</span>
+                            <span class="hidden md:inline">Аналитика</span>
+                        </button>
                         <button class="logout-button" onclick="logout()">
                             <span class="material-symbols-outlined text-[14px]">logout</span>
                             <span class="hidden md:inline">Выйти</span>
@@ -630,6 +815,24 @@
                     ← листайте таблицу горизонтально →
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Модальное окно аналитики -->
+    <div id="analytics-modal" class="analytics-modal-overlay">
+        <div class="analytics-modal-content">
+            <div class="analytics-modal-header">
+                <h3 class="text-lg font-medium">Детальный отчет за месяц</h3>
+                <button onclick="closeMonthlyReport()" class="text-apple-gray/50 hover:text-apple-black">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="analytics-modal-body" id="analytics-content">
+                <!-- Содержимое будет заполнено через JavaScript -->
+                <div class="text-center py-8 text-apple-gray">
+                    Загрузка данных...
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1180,8 +1383,161 @@ studentsAuth.onAuthStateChanged(async (user) => {
             return div.innerHTML;
         }
         
+        // Функции для модального окна аналитики
+        window.openMonthlyReport = function() {
+            generateMonthlyReport();
+            document.getElementById('analytics-modal').classList.add('show');
+        };
+        
+        window.closeMonthlyReport = function() {
+            document.getElementById('analytics-modal').classList.remove('show');
+        };
+        
+        function generateMonthlyReport() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            // Фильтруем транзакции за текущий месяц
+            const monthlyTransactions = transactions.filter(t => {
+                if (!t.date) return false;
+                const date = new Date(t.date.seconds * 1000);
+                return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+            });
+            
+            // Считаем доходы и расходы
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let incomeByPiggy = {};
+            let expenseByPiggy = {};
+            
+            monthlyTransactions.forEach(t => {
+                if (t.type === 'income') {
+                    totalIncome += t.amount;
+                    incomeByPiggy[t.piggyName] = (incomeByPiggy[t.piggyName] || 0) + t.amount;
+                } else {
+                    totalExpense += t.amount;
+                    expenseByPiggy[t.piggyName] = (expenseByPiggy[t.piggyName] || 0) + t.amount;
+                }
+            });
+            
+            // Формируем HTML для отчета
+            let html = `
+                <div class="analytics-summary">
+                    <div class="analytics-summary-card">
+                        <div class="analytics-summary-label">Доход</div>
+                        <div class="analytics-summary-value analytics-income">+${formatMoney(totalIncome)} ₽</div>
+                    </div>
+                    <div class="analytics-summary-card">
+                        <div class="analytics-summary-label">Расход</div>
+                        <div class="analytics-summary-value analytics-expense">-${formatMoney(totalExpense)} ₽</div>
+                    </div>
+                    <div class="analytics-summary-card">
+                        <div class="analytics-summary-label">Баланс за месяц</div>
+                        <div class="analytics-summary-value ${totalIncome - totalExpense >= 0 ? 'analytics-income' : 'analytics-expense'}">
+                            ${totalIncome - totalExpense >= 0 ? '+' : '-'}${formatMoney(Math.abs(totalIncome - totalExpense))} ₽
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Доходы по копилкам
+            if (Object.keys(incomeByPiggy).length > 0) {
+                html += `
+                    <div class="analytics-category-section">
+                        <div class="analytics-category-title">💰 Доходы по копилкам</div>
+                        <div class="analytics-category-grid">
+                `;
+                
+                for (let [piggy, amount] of Object.entries(incomeByPiggy)) {
+                    html += `
+                        <div class="analytics-category-item income">
+                            <span class="analytics-category-name">${piggy}</span>
+                            <span class="analytics-category-amount">+${formatMoney(amount)} ₽</span>
+                        </div>
+                    `;
+                }
+                
+                html += `</div></div>`;
+            }
+            
+            // Расходы по копилкам
+            if (Object.keys(expenseByPiggy).length > 0) {
+                html += `
+                    <div class="analytics-category-section">
+                        <div class="analytics-category-title">💸 Расходы по копилкам</div>
+                        <div class="analytics-category-grid">
+                `;
+                
+                for (let [piggy, amount] of Object.entries(expenseByPiggy)) {
+                    html += `
+                        <div class="analytics-category-item expense">
+                            <span class="analytics-category-name">${piggy}</span>
+                            <span class="analytics-category-amount">-${formatMoney(amount)} ₽</span>
+                        </div>
+                    `;
+                }
+                
+                html += `</div></div>`;
+            }
+            
+            // Детальная таблица
+            if (monthlyTransactions.length > 0) {
+                html += `
+                    <div class="analytics-category-section">
+                        <div class="analytics-category-title">📋 Детальные операции</div>
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Описание</th>
+                                    <th>Копилка</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                // Сортируем по дате (сначала новые)
+                const sorted = [...monthlyTransactions].sort((a, b) => {
+                    return (b.date?.seconds || 0) - (a.date?.seconds || 0);
+                });
+                
+                sorted.forEach(t => {
+                    const date = t.date 
+                        ? new Date(t.date.seconds * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+                        : 'сейчас';
+                    
+                    const amountClass = t.type === 'income' ? 'analytics-income' : 'analytics-expense';
+                    const amountSign = t.type === 'income' ? '+' : '−';
+                    
+                    html += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${escapeHtml(t.description)}</td>
+                            <td>${escapeHtml(t.piggyName || '')}</td>
+                            <td class="${amountClass}">${amountSign}${formatMoney(t.amount)} ₽</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `</tbody></table></div>`;
+            } else {
+                html += `<div class="text-center py-8 text-apple-gray">Нет операций за текущий месяц</div>`;
+            }
+            
+            document.getElementById('analytics-content').innerHTML = html;
+        }
+        
         // Инициализация
         populatePiggySelect();
+        
+        // Закрытие модального окна по клику на оверлей
+        document.getElementById('analytics-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMonthlyReport();
+            }
+        });
         
         // ========== КОД УЧЕНИКОВ (БЕЗ ИЗМЕНЕНИЙ) ==========
         
