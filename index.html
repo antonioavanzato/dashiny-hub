@@ -932,12 +932,12 @@
                 mainContent.style.display = 'block';
                 document.getElementById('connection-status').className = "text-green-600";
                 
-                // Загружаем данные
-loadFinanceData();
-loadStudentsData();
-loadPiggyBanks();  // ← ЭТУ СТРОКУ ДОБАВЬ
-
-switchApp('finance');
+                // Загружаем данные в правильном порядке
+                await loadPiggyBanks();  // Сначала загружаем копилки
+                loadFinanceData();       // Потом финансы (без перезаписи копилок)
+                loadStudentsData();      // Данные учеников (оставляем как есть)
+                
+                switchApp('finance');
             } else {
                 showLoginScreen();
             }
@@ -1090,27 +1090,34 @@ switchApp('finance');
             piggyBanks.other2.name = document.getElementById('other2-name').value || 'Прочее';
             
             populatePiggySelect();
+            
+            // Сохраняем имена копилок
+            savePiggyBanks();
         };
 
         window.updatePiggyAmount = async function(key) {
-    const input = document.getElementById(`${key}-amount`);
-    piggyBanks[key].amount = parseFloat(input.value) || 0;
-    recalculateTotals();
-    
-    if (key === 'mom') {
-        updateMomProgress();
-    }
-    
-    // СОХРАНЯЕМ ВСЕ КОПИЛКИ В FIREBASE
-    try {
-        await db.collection('piggyBanks').doc('main').set({
-            banks: piggyBanks
-        }, { merge: true });
-        console.log('✅ Копилки сохранены');
-    } catch (error) {
-        console.error('❌ Ошибка сохранения:', error);
-    }
-};
+            const input = document.getElementById(`${key}-amount`);
+            piggyBanks[key].amount = parseFloat(input.value) || 0;
+            recalculateTotals();
+            
+            if (key === 'mom') {
+                updateMomProgress();
+            }
+            
+            // СОХРАНЯЕМ ВСЕ КОПИЛКИ В FIREBASE
+            await savePiggyBanks();
+        };
+
+        async function savePiggyBanks() {
+            try {
+                await db.collection('piggyBanks').doc('main').set({
+                    banks: piggyBanks
+                }, { merge: true });
+                console.log('✅ Копилки сохранены');
+            } catch (error) {
+                console.error('❌ Ошибка сохранения:', error);
+            }
+        }
 
         function recalculateTotals() {
             const savingsKeys = ['life', 'mom', 'mypiggy', 'rent', 'katya', 'zhenya', 'minsk', 'mirror', 'other1', 'other2'];
@@ -1143,21 +1150,17 @@ switchApp('finance');
                 .orderBy("date", "desc")
                 .onSnapshot((snapshot) => {
                     transactions = [];
-                    for (let key in piggyBanks) {
-                        piggyBanks[key].amount = 0;
-                    }
+                    
+                    // НЕ ОБНУЛЯЕМ КОПИЛКИ! Используем уже загруженные значения из loadPiggyBanks()
+                    // Просто собираем транзакции для отображения
                     
                     snapshot.forEach((doc) => {
                         const t = { id: doc.id, ...doc.data() };
                         transactions.push(t);
-                        
-                        if (t.type === 'income' && t.piggyKey) {
-                            piggyBanks[t.piggyKey].amount += t.amount;
-                        } else if (t.type === 'expense' && t.piggyKey) {
-                            piggyBanks[t.piggyKey].amount -= t.amount;
-                        }
+                        // НЕ пересчитываем копилки из транзакций, так как у нас есть отдельное хранилище
                     });
                     
+                    // Обновляем UI с текущими значениями копилок (они уже загружены из piggyBanks)
                     for (let key in piggyBanks) {
                         const input = document.getElementById(`${key}-amount`);
                         if (input) {
@@ -1305,6 +1308,27 @@ switchApp('finance');
             try {
                 await db.collection(FINANCE_COLLECTION).add(transactionData);
                 
+                // Обновляем копилку
+                if (type === 'income') {
+                    piggyBanks[piggyKey].amount += amount;
+                } else {
+                    piggyBanks[piggyKey].amount -= amount;
+                }
+                
+                // Сохраняем обновленные копилки
+                await savePiggyBanks();
+                
+                // Обновляем поля ввода
+                const input = document.getElementById(`${piggyKey}-amount`);
+                if (input) {
+                    input.value = piggyBanks[piggyKey].amount;
+                }
+                
+                recalculateTotals();
+                if (piggyKey === 'mom') {
+                    updateMomProgress();
+                }
+                
                 document.getElementById('description').value = '';
                 document.getElementById('amount').value = '';
                 document.getElementById('description').focus();
@@ -1317,6 +1341,33 @@ switchApp('finance');
         window.deleteTransaction = async function(id) {
             if (confirm('Удалить операцию?')) {
                 try {
+                    // Сначала найдем транзакцию
+                    const transactionDoc = await db.collection(FINANCE_COLLECTION).doc(id).get();
+                    if (transactionDoc.exists) {
+                        const t = transactionDoc.data();
+                        
+                        // Откатываем изменения в копилке
+                        if (t.type === 'income') {
+                            piggyBanks[t.piggyKey].amount -= t.amount;
+                        } else {
+                            piggyBanks[t.piggyKey].amount += t.amount;
+                        }
+                        
+                        // Сохраняем обновленные копилки
+                        await savePiggyBanks();
+                        
+                        // Обновляем поля ввода
+                        const input = document.getElementById(`${t.piggyKey}-amount`);
+                        if (input) {
+                            input.value = piggyBanks[t.piggyKey].amount;
+                        }
+                        
+                        recalculateTotals();
+                        if (t.piggyKey === 'mom') {
+                            updateMomProgress();
+                        }
+                    }
+                    
                     await db.collection(FINANCE_COLLECTION).doc(id).delete();
                 } catch (error) {
                     alert('Ошибка при удалении');
@@ -1533,7 +1584,38 @@ switchApp('finance');
             }
         });
 
-        // ========== КОД УЧЕНИКОВ ==========
+        // ========== ЗАГРУЗКА КОПИЛОК ==========
+        async function loadPiggyBanks() {
+            if (!auth.currentUser) return;
+            
+            try {
+                const doc = await db.collection('piggyBanks').doc('main').get();
+                if (doc.exists) {
+                    const saved = doc.data().banks;
+                    if (saved) {
+                        piggyBanks = saved;
+                        // Обновляем поля ввода
+                        for (let key in piggyBanks) {
+                            const input = document.getElementById(`${key}-amount`);
+                            if (input) {
+                                input.value = piggyBanks[key].amount;
+                            }
+                            const nameInput = document.getElementById(`${key}-name`);
+                            if (nameInput) {
+                                nameInput.value = piggyBanks[key].name;
+                            }
+                        }
+                        recalculateTotals();
+                        updateMomProgress();
+                        populatePiggySelect(); // Обновляем выпадающий список с новыми именами
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки копилок:', error);
+            }
+        }
+
+        // ========== КОД УЧЕНИКОВ (ПОЛНОСТЬЮ СОХРАНЕН) ==========
         let students = Array(30).fill().map((_, i) => ({ id: i + 1, name: '' }));
         let tableData = {};
         let rentData = {};
@@ -1815,35 +1897,6 @@ switchApp('finance');
             document.getElementById('taxAmount').textContent = `${tax.toLocaleString()} ₽`;
             document.getElementById('netAmount').textContent = `${net.toLocaleString()} ₽`;
         }
-        // ========== ЗАГРУЗКА КОПИЛОК ==========
-async function loadPiggyBanks() {
-    if (!auth.currentUser) return;
-    
-    try {
-        const doc = await db.collection('piggyBanks').doc('main').get();
-        if (doc.exists) {
-            const saved = doc.data().banks;
-            if (saved) {
-                piggyBanks = saved;
-                // Обновляем поля ввода
-                for (let key in piggyBanks) {
-                    const input = document.getElementById(`${key}-amount`);
-                    if (input) {
-                        input.value = piggyBanks[key].amount;
-                    }
-                    const nameInput = document.getElementById(`${key}-name`);
-                    if (nameInput) {
-                        nameInput.value = piggyBanks[key].name;
-                    }
-                }
-                recalculateTotals();
-                updateMomProgress();
-            }
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки копилок:', error);
-    }
-}
     </script>
 </body>
 </html>
