@@ -621,9 +621,9 @@
                 
                 <!-- Первая строка: Black и Общий баланс -->
                <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
-                    <!-- Black (редактируемый) -->
+                    <!-- Black (редактируемый) - текст заголовка крупнее и жирнее -->
                     <div class="piggy-bank p-3 md:p-4">
-                        <input type="text" id="black-name" value="Black" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
+                        <input type="text" id="black-name" value="Black" class="piggy-name-input text-sm md:text-base font-bold" placeholder="Название" onchange="updatePiggyNames()">
                       <input type="number" id="black-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('black')">
                     </div>
                     
@@ -634,9 +634,9 @@
                     </div>
                 </div>
                 
-                <!-- Вторая строка: Накопительный счет (нередактируемый) -->
+                <!-- Вторая строка: Накопительный счет (нередактируемый) - текст заголовка крупнее и жирнее -->
                 <div class="bg-white border border-gray-200/80 rounded-apple-md p-3 md:p-4 mb-3 md:mb-4">
-                    <div class="text-[10px] md:text-xs text-apple-gray mb-1">Накопительный счет</div>
+                    <div class="text-sm md:text-base font-bold text-apple-gray mb-1">Накопительный счет</div>
                     <div class="text-xl md:text-2xl font-light text-apple-black" id="savings-total">0 ₽</div>
                 </div>
                 
