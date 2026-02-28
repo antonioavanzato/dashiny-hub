@@ -621,10 +621,10 @@
                 
                 <!-- Первая строка: Black и Общий баланс -->
                <div class="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-4">
-                    <!-- Black (редактируемый) - увеличенный и жирный -->
+                    <!-- Black (редактируемый) -->
                     <div class="piggy-bank p-3 md:p-4">
                         <input type="text" id="black-name" value="Black" class="piggy-name-input text-xs md:text-sm" placeholder="Название" onchange="updatePiggyNames()">
-                        <input type="number" id="black-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-xl md:text-3xl font-bold" onchange="updatePiggyAmount('black')">
+                      <input type="number" id="black-amount" value="0" min="0" step="1" inputmode="numeric" class="piggy-amount-input text-base md:text-xl" onchange="updatePiggyAmount('black')">
                     </div>
                     
                     <!-- Общий баланс (нередактируемый) -->
@@ -634,10 +634,10 @@
                     </div>
                 </div>
                 
-                <!-- Вторая строка: Накопительный счет (нередактируемый) - увеличенный и жирный -->
+                <!-- Вторая строка: Накопительный счет (нередактируемый) -->
                 <div class="bg-white border border-gray-200/80 rounded-apple-md p-3 md:p-4 mb-3 md:mb-4">
                     <div class="text-[10px] md:text-xs text-apple-gray mb-1">Накопительный счет</div>
-                    <div class="text-2xl md:text-4xl font-bold text-apple-black" id="savings-total">0 ₽</div>
+                    <div class="text-xl md:text-2xl font-light text-apple-black" id="savings-total">0 ₽</div>
                 </div>
                 
                 <!-- Третья строка: На жизнь / Мама с прогрессом -->
